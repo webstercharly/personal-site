@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--
+    If you are seeing this, please don't judge me based on this websites code.
+    Quick and dirty implementation of a placeholder website.
+  -->
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+  <title>Charly Webster</title>
+  <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,500,600,700' rel='stylesheet' type='text/css'>
+
+  <style type="text/css">
+    body {
+      height: 100vh;
+      margin: 0px;
+      background-image: url('images/background.jpg');
+      background-repeat: no-repeat;
+      background-size: cover;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover -1px;
+    }
+
+    .layout {
+      padding-bottom: 24px;
+      text-align: center;
+      font-size: 14px;
+      font-family: Raleway, arial;
+      font-weight: 400;
+      line-height: 23px;
+      color: #ffffff;
+    }
+
+    .social-media {
+      width: 44px;
+      height: 44px;
+      padding-right: 6px
+    }
+
+    [class="author"] {
+      width: 240px;
+      height: 240px;
+      border: 1px black solid;
+      background-image: url('images/author.jpg');
+      border-radius: 50%;
+      -moz-border-radius: 50%;
+      -webkit-border-radius: 50%;
+    }
+
+    .container {
+      height: 100%;
+      background-color: #1818189d;
+      text-align: center
+    }
+
+    [class="name"] {
+      font-size: 24px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      padding-top: 18px;
+    }
+
+    [class="title"] {
+      font-size: 18px;
+      font-weight: 400;
+      padding-top: 4px;
+      padding-bottom: 18px;
+    }
+
+    [class="content"] {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: Raleway, arial;
+      line-height: 23px;
+      color: #ffffff;
+      margin: 0 auto;
+    }
+
+    img {
+      margin: 0;
+      border: none;
+    }
+
+    a {
+      text-decoration: none;
+      line-height: 14px;
+      text-align: right;
+      color: #bbbbbb;
+      font-size: 14px;
+      font-family: Raleway, arial;
+    }
+
+    @media only screen and (min-width: 515px) and (max-width: 768px) {
+      [class="author"] {
+        width: 180px;
+        height: 180px;
+      }
+
+      [class="content"] {
+        width: 500px;
+        margin: 0 auto;
+      }
+
+      [class="social-media"] {
+        padding-right: 6px
+      }
+    }
+
+    @media only screen and (max-width: 515px) {
+      [class="author"] {
+        width: 100px;
+        height: 100px;
+      }
+
+      [class="name"] {
+        font-size: 18px;
+        letter-spacing: 1px;
+      }
+
+      [class="title"] {
+        font-size: 15px;
+        padding-top: 0px;
+      }
+
+      [class="content"] {
+        width: 240px;
+        margin: 0 auto;
+      }
+
+      [class="social-media"] {
+        padding-right: 2px;
+        width: 33px;
+        height: 33px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="content">
+      <div name="author image">
+        <img class="author" src="images/author.jpg" alt="author image" />
+      </div>
+      <div name="name" class="name">
+        CHARLY WEBSTER
+      </div>
+      <div name="title" class="title">
+        Senior Software Developer in Test @ JustGiving
+      </div>
+      <a href="https://github.com/webstercharly">
+        <img class="social-media" src="images/github.png" alt="github icon" />
+      </a>
+      <a href="https://medium.com/@CharlyWebster">
+        <img class="social-media" src="images/medium.png" alt="medium icon" />
+      </a>
+      <a href="http://www.linkedin.com/in/charlywebster">
+        <img class="social-media" src="images/linkedin.png" alt="linkedin icon" />
+      </a>
+      <a href="http://www.twitter.com/webstercharly">
+        <img class="social-media" src="images/twitter.png" alt="twitter icon" />
+      </a>
+      <a href="mailto:me@charlywebster.com?Subject=Hello">
+        <img class="social-media" src="images/email.png" alt="email icon" />
+      </a>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,154 @@
+---
+/**
+ * Mermaid Diagram Component
+ *
+ * Renders Mermaid diagrams for flowcharts, sequence diagrams, architecture, etc.
+ *
+ * Usage:
+ * <Mermaid
+ *   diagram={`
+ *     graph TD
+ *       A[Client] --> B[Load Balancer]
+ *       B --> C[Server1]
+ *       B --> D[Server2]
+ *   `}
+ *   caption="Load balancer architecture"
+ * />
+ *
+ * Or use the slot:
+ * <Mermaid caption="My Diagram">
+ *   graph TD
+ *     A[Start] --> B[Process]
+ *     B --> C[End]
+ * </Mermaid>
+ */
+
+interface Props {
+  diagram?: string;
+  caption?: string;
+  theme?: 'default' | 'dark' | 'neutral';
+}
+
+const { diagram, caption, theme = 'default' } = Astro.props;
+
+// Generate unique ID for this diagram
+const diagramId = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
+---
+
+<figure class="mermaid-component my-8">
+  <div
+    id={diagramId}
+    class="mermaid-diagram p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-auto"
+    data-theme={theme}
+  >
+    <div class="mermaid">
+      {diagram || <slot />}
+    </div>
+  </div>
+
+  {caption && (
+    <figcaption class="mt-3 text-sm text-center text-gray-600 dark:text-gray-400 italic">
+      {caption}
+    </figcaption>
+  )}
+</figure>
+
+<!-- Load Mermaid from CDN -->
+<script is:inline>
+  // Only load Mermaid once
+  if (!window.mermaidLoaded) {
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.textContent = `
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+
+      // Configure Mermaid
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+        securityLevel: 'loose',
+        fontFamily: 'Inter, system-ui, sans-serif',
+      });
+
+      // Re-initialize when theme changes
+      window.addEventListener('theme-changed', () => {
+        const newTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'default';
+        mermaid.initialize({
+          startOnLoad: true,
+          theme: newTheme,
+          securityLevel: 'loose',
+          fontFamily: 'Inter, system-ui, sans-serif',
+        });
+
+        // Re-render all diagrams
+        document.querySelectorAll('.mermaid').forEach((element) => {
+          const graphDefinition = element.textContent;
+          element.removeAttribute('data-processed');
+          element.textContent = graphDefinition;
+        });
+        mermaid.run();
+      });
+
+      // Initial render
+      mermaid.run();
+    `;
+    document.head.appendChild(script);
+    window.mermaidLoaded = true;
+  }
+</script>
+
+<style>
+  .mermaid-component {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .mermaid-diagram {
+    transition: all 0.3s ease;
+  }
+
+  .mermaid-diagram:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Style mermaid diagrams */
+  .mermaid-diagram :global(.mermaid) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+  }
+
+  .mermaid-diagram :global(svg) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Dark mode adjustments */
+  :global(.dark) .mermaid-diagram :global(.node rect),
+  :global(.dark) .mermaid-diagram :global(.node circle),
+  :global(.dark) .mermaid-diagram :global(.node ellipse),
+  :global(.dark) .mermaid-diagram :global(.node polygon) {
+    fill: #374151;
+    stroke: #6b7280;
+  }
+
+  :global(.dark) .mermaid-diagram :global(.node .label) {
+    color: #f3f4f6;
+  }
+
+  :global(.dark) .mermaid-diagram :global(.edgeLabel) {
+    background-color: #1f2937;
+    color: #f3f4f6;
+  }
+</style>

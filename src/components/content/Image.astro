@@ -110,6 +110,10 @@ const loadingStrategy = priority ? 'eager' : 'lazy';
           const lightbox = document.createElement('div');
           lightbox.className = 'fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4 cursor-zoom-out';
           lightbox.style.animation = 'fadeIn 0.2s ease-out';
+          lightbox.setAttribute('role', 'dialog');
+          lightbox.setAttribute('aria-modal', 'true');
+          lightbox.setAttribute('aria-label', 'Image lightbox. Click or press Escape to close.');
+          lightbox.setAttribute('tabindex', '-1');
 
           const lightboxImg = document.createElement('img');
           lightboxImg.src = img.src;
@@ -120,6 +124,9 @@ const loadingStrategy = priority ? 'eager' : 'lazy';
           lightbox.appendChild(lightboxImg);
           document.body.appendChild(lightbox);
           document.body.style.overflow = 'hidden';
+
+          // Focus lightbox for accessibility
+          lightbox.focus();
 
           // Close on click
           lightbox.addEventListener('click', () => {

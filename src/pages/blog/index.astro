@@ -2,23 +2,32 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 
-const allPosts = await getCollection('blog');
-const posts = allPosts
-  .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+let posts: CollectionEntry<'blog'>[] = [];
+let postsByYear: Record<number, CollectionEntry<'blog'>[]> = {};
+let years: string[] = [];
 
-// Group posts by year
-const postsByYear = posts.reduce((acc, post) => {
-  const year = post.data.pubDate.getFullYear();
-  if (!acc[year]) {
-    acc[year] = [];
-  }
-  acc[year].push(post);
-  return acc;
-}, {} as Record<number, typeof posts>);
+try {
+  const allPosts = await getCollection('blog');
+  posts = allPosts
+    .filter(post => !post.data.draft)
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
-const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
+  // Group posts by year
+  postsByYear = posts.reduce((acc, post) => {
+    const year = post.data.pubDate.getFullYear();
+    if (!acc[year]) {
+      acc[year] = [];
+    }
+    acc[year].push(post);
+    return acc;
+  }, {} as Record<number, CollectionEntry<'blog'>[]>);
+
+  years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
+} catch (err) {
+  console.error('Failed to load blog posts:', err);
+}
 ---
 
 <BaseLayout
@@ -27,7 +36,7 @@ const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
 >
   <Navigation />
 
-  <main class="container py-12">
+  <main id="main-content" class="container py-12">
     <div class="max-w-4xl mx-auto">
       <!-- Header -->
       <div class="mb-12">

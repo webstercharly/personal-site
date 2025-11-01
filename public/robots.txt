@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://charlywebster.com/sitemap-index.xml
+
+# Crawl delay (be nice to servers)
+Crawl-delay: 1
+
+# Block common bot patterns (optional)
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10

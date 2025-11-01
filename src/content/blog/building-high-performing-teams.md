@@ -1,6 +1,6 @@
 ---
 title: 'Five Principles for Building High-Performing Engineering Teams'
-description: 'Key principles I've learned from building and scaling engineering teams that consistently deliver exceptional results.'
+description: 'Key principles I have learned from building and scaling engineering teams that consistently deliver exceptional results.'
 pubDate: 2025-10-15
 author: 'Charly Webster'
 tags: ['leadership', 'team-building', 'engineering-culture']

@@ -43,7 +43,7 @@ const {
 const maxValue = max ?? Math.max(...data.map(d => d.value)) * 1.1;
 
 // Calculate percentages for bar widths
-const dataWithPercentages = data.map(item => ({
+const dataWithPercentages: (ChartData & { percentage: number })[] = data.map(item => ({
   ...item,
   percentage: (item.value / maxValue) * 100,
 }));

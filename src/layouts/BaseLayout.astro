@@ -31,6 +31,12 @@ const socialImageURL = new URL(image, Astro.site);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://giscus.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; frame-src https://giscus.app; connect-src 'self' https://giscus.app;" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
     <!-- Canonical URL -->
     <link rel="canonical" href={canonicalURL} />
 
@@ -61,8 +67,12 @@ const socialImageURL = new URL(image, Astro.site);
     <!-- Dark Mode Script (runs before page renders to prevent flash) -->
     <script is:inline>
       const theme = (() => {
-        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-          return localStorage.getItem('theme');
+        if (typeof localStorage !== 'undefined') {
+          const stored = localStorage.getItem('theme');
+          // Validate that stored value is one of our expected values
+          if (stored === 'dark' || stored === 'light') {
+            return stored;
+          }
         }
         if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
           return 'dark';

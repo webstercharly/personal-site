@@ -113,36 +113,59 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / 200); // ~200 wor
   </main>
 
   <!-- Giscus Script -->
-  <script>
-    // Giscus configuration
+  <script define:vars={{
+    giscusRepo: import.meta.env.PUBLIC_GISCUS_REPO,
+    giscusRepoId: import.meta.env.PUBLIC_GISCUS_REPO_ID,
+    giscusCategory: import.meta.env.PUBLIC_GISCUS_CATEGORY,
+    giscusCategoryId: import.meta.env.PUBLIC_GISCUS_CATEGORY_ID
+  }}>
+    // Giscus configuration from environment variables
     const giscusTheme = document.documentElement.classList.contains('dark')
       ? 'dark'
       : 'light';
 
-    const giscusAttributes = {
-      src: 'https://giscus.app/client.js',
-      'data-repo': 'webstercharly/personal-site', // Update with your repo
-      'data-repo-id': '', // Add your repo ID from giscus.app
-      'data-category': 'Blog Comments',
-      'data-category-id': '', // Add your category ID from giscus.app
-      'data-mapping': 'pathname',
-      'data-strict': '0',
-      'data-reactions-enabled': '1',
-      'data-emit-metadata': '0',
-      'data-input-position': 'top',
-      'data-theme': giscusTheme,
-      'data-lang': 'en',
-      'data-loading': 'lazy',
-      crossorigin: 'anonymous',
-      async: '',
-    };
+    // Validate configuration before loading
+    if (!giscusRepoId || !giscusCategoryId) {
+      console.warn('Giscus not fully configured. Set PUBLIC_GISCUS_REPO_ID and PUBLIC_GISCUS_CATEGORY_ID in .env');
+      const container = document.getElementById('giscus-container');
+      if (container) {
+        container.innerHTML = '<p class="text-gray-600 dark:text-gray-400 italic">Comments will be available once giscus is configured. See README for setup instructions.</p>';
+      }
+    } else {
+      const giscusAttributes = {
+        src: 'https://giscus.app/client.js',
+        'data-repo': giscusRepo || '',
+        'data-repo-id': giscusRepoId,
+        'data-category': giscusCategory || 'Comments',
+        'data-category-id': giscusCategoryId,
+        'data-mapping': 'pathname',
+        'data-strict': '0',
+        'data-reactions-enabled': '1',
+        'data-emit-metadata': '0',
+        'data-input-position': 'top',
+        'data-theme': giscusTheme,
+        'data-lang': 'en',
+        'data-loading': 'lazy',
+        crossorigin: 'anonymous',
+        async: '',
+      };
 
-    const giscusScript = document.createElement('script');
-    Object.entries(giscusAttributes).forEach(([key, value]) => {
-      giscusScript.setAttribute(key, value);
+      const giscusScript = document.createElement('script');
+      Object.entries(giscusAttributes).forEach(([key, value]) => {
+        giscusScript.setAttribute(key, value);
+      });
+
+      document.getElementById('giscus-container')?.appendChild(giscusScript);
+    }
+
+    // Validate incoming messages from giscus iframe (security)
+    window.addEventListener('message', (event) => {
+      // Only accept messages from giscus
+      if (event.origin !== 'https://giscus.app') {
+        return;
+      }
+      // Messages from giscus are safe to process
     });
-
-    document.getElementById('giscus-container')?.appendChild(giscusScript);
 
     // Update giscus theme when toggling dark mode
     const observer = new MutationObserver(() => {

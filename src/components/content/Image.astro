@@ -1,0 +1,189 @@
+---
+/**
+ * Enhanced Image Component
+ *
+ * Image with caption, optional zoom, lazy loading, and responsive sizing
+ *
+ * Usage:
+ * <Image
+ *   src="/images/architecture.png"
+ *   alt="System architecture diagram"
+ *   caption="Our microservices architecture as of 2024"
+ *   width={800}
+ *   height={600}
+ *   zoomable={true}
+ * />
+ */
+
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  credit?: string;
+  creditUrl?: string;
+  width?: number;
+  height?: number;
+  zoomable?: boolean;
+  priority?: boolean; // Load immediately without lazy loading
+  size?: 'sm' | 'md' | 'lg' | 'full';
+}
+
+const {
+  src,
+  alt,
+  caption,
+  credit,
+  creditUrl,
+  width,
+  height,
+  zoomable = false,
+  priority = false,
+  size = 'full',
+} = Astro.props;
+
+const sizes = {
+  sm: 'max-w-md',
+  md: 'max-w-2xl',
+  lg: 'max-w-4xl',
+  full: 'max-w-full',
+};
+
+const loadingStrategy = priority ? 'eager' : 'lazy';
+---
+
+<figure class={`image-component my-8 ${sizes[size]} mx-auto`}>
+  <div class={`image-wrapper relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 ${zoomable ? 'cursor-zoom-in' : ''}`}>
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={loadingStrategy}
+      decoding="async"
+      class="w-full h-auto transition-transform duration-300 hover:scale-105"
+    />
+
+    {zoomable && (
+      <div class="zoom-overlay absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100">
+        <span class="text-white text-sm font-medium bg-black bg-opacity-50 px-3 py-1 rounded-full">
+          🔍 Click to zoom
+        </span>
+      </div>
+    )}
+  </div>
+
+  {(caption || credit) && (
+    <figcaption class="mt-3 text-sm text-center text-gray-600 dark:text-gray-400">
+      {caption && <div class="italic">{caption}</div>}
+      {credit && (
+        <div class="mt-1 text-xs">
+          {creditUrl ? (
+            <a
+              href={creditUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Credit: {credit}
+            </a>
+          ) : (
+            <span>Credit: {credit}</span>
+          )}
+        </div>
+      )}
+    </figcaption>
+  )}
+</figure>
+
+{zoomable && (
+  <script>
+    // Simple lightbox functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      const zoomableImages = document.querySelectorAll('.image-wrapper.cursor-zoom-in');
+
+      zoomableImages.forEach((wrapper) => {
+        wrapper.addEventListener('click', () => {
+          const img = wrapper.querySelector('img');
+          if (!img) return;
+
+          // Create lightbox
+          const lightbox = document.createElement('div');
+          lightbox.className = 'fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4 cursor-zoom-out';
+          lightbox.style.animation = 'fadeIn 0.2s ease-out';
+
+          const lightboxImg = document.createElement('img');
+          lightboxImg.src = img.src;
+          lightboxImg.alt = img.alt;
+          lightboxImg.className = 'max-w-full max-h-full object-contain';
+          lightboxImg.style.animation = 'zoomIn 0.3s ease-out';
+
+          lightbox.appendChild(lightboxImg);
+          document.body.appendChild(lightbox);
+          document.body.style.overflow = 'hidden';
+
+          // Close on click
+          lightbox.addEventListener('click', () => {
+            lightbox.style.animation = 'fadeOut 0.2s ease-out';
+            setTimeout(() => {
+              document.body.removeChild(lightbox);
+              document.body.style.overflow = '';
+            }, 200);
+          });
+
+          // Close on Escape key
+          const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+              lightbox.click();
+              document.removeEventListener('keydown', handleEscape);
+            }
+          };
+          document.addEventListener('keydown', handleEscape);
+        });
+      });
+    });
+  </script>
+
+  <style is:global>
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    @keyframes zoomIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+)}
+
+<style>
+  .image-component {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .image-wrapper:hover img {
+    transform: scale(1.02);
+  }
+</style>

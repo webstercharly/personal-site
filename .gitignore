@@ -78,3 +78,6 @@ Thumbs.db
 
 # Backup files
 *.old
+
+# Unused/unoptimized assets
+unused-assets/

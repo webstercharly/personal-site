@@ -1,0 +1,166 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+
+export async function getStaticPaths() {
+  const blogEntries = await getCollection('blog');
+  return blogEntries.map(entry => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+const readingTime = Math.ceil(entry.body.split(/\s+/).length / 200); // ~200 words per minute
+---
+
+<BaseLayout
+  title={`${entry.data.title} - Charly Webster`}
+  description={entry.data.description}
+  type="article"
+  publishedTime={entry.data.pubDate.toISOString()}
+  tags={entry.data.tags}
+>
+  <Navigation />
+
+  <main class="container py-12">
+    <article class="max-w-3xl mx-auto">
+      <!-- Article Header -->
+      <header class="mb-12">
+        <div class="mb-6">
+          <a
+            href="/blog"
+            class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            ← Back to Blog
+          </a>
+        </div>
+
+        <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+          {entry.data.title}
+        </h1>
+
+        <div class="flex flex-wrap items-center gap-4 text-gray-600 dark:text-gray-400 mb-6">
+          <time>
+            {entry.data.pubDate.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </time>
+          <span>•</span>
+          <span>{readingTime} min read</span>
+          <span>•</span>
+          <span>By {entry.data.author}</span>
+        </div>
+
+        {entry.data.updatedDate && (
+          <p class="text-sm text-gray-600 dark:text-gray-400 italic">
+            Updated: {entry.data.updatedDate.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </p>
+        )}
+
+        {entry.data.tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mt-6">
+            {entry.data.tags.map((tag) => (
+              <span class="px-3 py-1 text-sm font-medium rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </header>
+
+      <!-- Article Content -->
+      <div class="prose prose-lg dark:prose-invert max-w-none mb-12">
+        <Content />
+      </div>
+
+      <!-- Author Info -->
+      <div class="border-t border-b border-gray-200 dark:border-gray-700 py-8 my-12">
+        <div class="flex items-start gap-4">
+          <img
+            src="/images/author.jpg"
+            alt="Charly Webster"
+            class="w-16 h-16 rounded-full object-cover"
+          />
+          <div>
+            <h3 class="text-lg font-bold mb-2">About {entry.data.author}</h3>
+            <p class="text-gray-700 dark:text-gray-300">
+              Head of Software Engineering with a passion for building high-performing teams
+              and scalable systems. Follow me on
+              <a href="https://twitter.com/webstercharly" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">Twitter</a>
+              or
+              <a href="https://www.linkedin.com/in/charly-webster" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">LinkedIn</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comments Section (giscus) -->
+      <div class="mt-12">
+        <h2 class="text-2xl font-bold mb-6">Comments</h2>
+        <div id="giscus-container" class="giscus"></div>
+      </div>
+    </article>
+  </main>
+
+  <!-- Giscus Script -->
+  <script>
+    // Giscus configuration
+    const giscusTheme = document.documentElement.classList.contains('dark')
+      ? 'dark'
+      : 'light';
+
+    const giscusAttributes = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'webstercharly/personal-site', // Update with your repo
+      'data-repo-id': '', // Add your repo ID from giscus.app
+      'data-category': 'Blog Comments',
+      'data-category-id': '', // Add your category ID from giscus.app
+      'data-mapping': 'pathname',
+      'data-strict': '0',
+      'data-reactions-enabled': '1',
+      'data-emit-metadata': '0',
+      'data-input-position': 'top',
+      'data-theme': giscusTheme,
+      'data-lang': 'en',
+      'data-loading': 'lazy',
+      crossorigin: 'anonymous',
+      async: '',
+    };
+
+    const giscusScript = document.createElement('script');
+    Object.entries(giscusAttributes).forEach(([key, value]) => {
+      giscusScript.setAttribute(key, value);
+    });
+
+    document.getElementById('giscus-container')?.appendChild(giscusScript);
+
+    // Update giscus theme when toggling dark mode
+    const observer = new MutationObserver(() => {
+      const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+      if (iframe?.contentWindow) {
+        const theme = document.documentElement.classList.contains('dark')
+          ? 'dark'
+          : 'light';
+        iframe.contentWindow.postMessage(
+          { giscus: { setConfig: { theme } } },
+          'https://giscus.app'
+        );
+      }
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+  </script>
+</BaseLayout>

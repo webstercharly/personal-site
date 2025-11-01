@@ -1,0 +1,187 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const recentPosts = allPosts
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+---
+
+<BaseLayout
+  title="Charly Webster - Head of Software Engineering"
+  description="Personal website and blog of Charly Webster, Head of Software Engineering. Sharing insights on engineering leadership, software architecture, and team building."
+>
+  <Navigation />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="container py-20 md:py-32">
+      <div class="max-w-4xl mx-auto text-center fade-in">
+        <div class="mb-8">
+          <img
+            src="/images/author.jpg"
+            alt="Charly Webster"
+            class="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto object-cover border-4 border-gray-200 dark:border-gray-700 shadow-lg"
+          />
+        </div>
+
+        <h1 class="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          Charly Webster
+        </h1>
+
+        <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-8">
+          Head of Software Engineering
+        </p>
+
+        <p class="text-lg text-gray-700 dark:text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
+          Building high-performing engineering teams and scalable systems.
+          Passionate about engineering leadership, software architecture, and fostering engineering excellence.
+        </p>
+
+        <!-- Social Links -->
+        <div class="flex justify-center gap-4 mb-12">
+          <a
+            href="https://github.com/webstercharly"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="GitHub"
+          >
+            <img src="/images/github.png" alt="GitHub" class="w-6 h-6" />
+          </a>
+          <a
+            href="https://www.linkedin.com/in/charly-webster"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="LinkedIn"
+          >
+            <img src="/images/linkedin.png" alt="LinkedIn" class="w-6 h-6" />
+          </a>
+          <a
+            href="https://medium.com/@webstercharly"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Medium"
+          >
+            <img src="/images/medium.png" alt="Medium" class="w-6 h-6" />
+          </a>
+          <a
+            href="https://twitter.com/webstercharly"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Twitter"
+          >
+            <img src="/images/twitter.png" alt="Twitter" class="w-6 h-6" />
+          </a>
+          <a
+            href="mailto:webstercharly@gmail.com"
+            class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Email"
+          >
+            <img src="/images/email.png" alt="Email" class="w-6 h-6" />
+          </a>
+        </div>
+
+        <!-- CTA -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="/blog"
+            class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-lg hover:shadow-xl"
+          >
+            Read My Blog
+          </a>
+          <a
+            href="mailto:webstercharly@gmail.com"
+            class="px-8 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium rounded-lg transition-colors"
+          >
+            Get In Touch
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Posts Section -->
+    {recentPosts.length > 0 && (
+      <section class="container py-16 border-t border-gray-200 dark:border-gray-800">
+        <div class="max-w-4xl mx-auto">
+          <div class="flex items-center justify-between mb-8">
+            <h2 class="text-3xl font-bold">Recent Posts</h2>
+            <a
+              href="/blog"
+              class="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              View all →
+            </a>
+          </div>
+
+          <div class="grid gap-6">
+            {recentPosts.map((post) => (
+              <article class="p-6 rounded-lg bg-gray-50 dark:bg-gray-800 hover:shadow-lg transition-shadow">
+                <a href={`/blog/${post.slug}`} class="group">
+                  <time class="text-sm text-gray-600 dark:text-gray-400">
+                    {post.data.pubDate.toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </time>
+                  <h3 class="text-xl font-bold mt-2 mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    {post.data.title}
+                  </h3>
+                  <p class="text-gray-700 dark:text-gray-300 mb-4">
+                    {post.data.description}
+                  </p>
+                  {post.data.tags.length > 0 && (
+                    <div class="flex flex-wrap gap-2">
+                      {post.data.tags.map((tag) => (
+                        <span class="px-3 py-1 text-xs font-medium rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </a>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- About Section -->
+    <section class="container py-16 border-t border-gray-200 dark:border-gray-800">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold mb-6">About Me</h2>
+        <div class="prose dark:prose-invert max-w-none">
+          <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+            I'm a Head of Software Engineering with a passion for building excellent engineering teams
+            and scalable, reliable systems. My background includes extensive experience in software testing,
+            quality assurance, and engineering leadership.
+          </p>
+          <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+            I write about engineering leadership, software architecture, testing strategies, and the
+            practices that enable teams to ship high-quality software at scale.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-200 dark:border-gray-800 mt-20">
+    <div class="container py-8">
+      <div class="text-center text-gray-600 dark:text-gray-400 text-sm">
+        <p>&copy; {new Date().getFullYear()} Charly Webster. All rights reserved.</p>
+        <p class="mt-2">
+          Built with <a href="https://astro.build" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">Astro</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+</BaseLayout>

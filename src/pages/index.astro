@@ -2,12 +2,20 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Navigation from '../components/Navigation.astro';
 import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { RECENT_POSTS_COUNT } from '../lib/constants';
 
-const allPosts = await getCollection('blog');
-const recentPosts = allPosts
-  .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
+let recentPosts: CollectionEntry<'blog'>[] = [];
+
+try {
+  const allPosts = await getCollection('blog');
+  recentPosts = allPosts
+    .filter(post => !post.data.draft)
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+    .slice(0, RECENT_POSTS_COUNT);
+} catch (error) {
+  console.error('Failed to load blog posts:', error);
+}
 ---
 
 <BaseLayout
@@ -16,7 +24,7 @@ const recentPosts = allPosts
 >
   <Navigation />
 
-  <main>
+  <main id="main-content">
     <!-- Hero Section -->
     <section class="container py-20 md:py-32">
       <div class="max-w-4xl mx-auto text-center fade-in">
@@ -24,6 +32,8 @@ const recentPosts = allPosts
           <img
             src="/images/author.jpg"
             alt="Charly Webster"
+            loading="eager"
+            decoding="async"
             class="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto object-cover border-4 border-gray-200 dark:border-gray-700 shadow-lg"
           />
         </div>
@@ -50,7 +60,7 @@ const recentPosts = allPosts
             class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             aria-label="GitHub"
           >
-            <img src="/images/github.png" alt="GitHub" class="w-6 h-6" />
+            <img src="/images/github.png" alt="GitHub" loading="lazy" decoding="async" class="w-6 h-6" />
           </a>
           <a
             href="https://www.linkedin.com/in/charly-webster"
@@ -59,7 +69,7 @@ const recentPosts = allPosts
             class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             aria-label="LinkedIn"
           >
-            <img src="/images/linkedin.png" alt="LinkedIn" class="w-6 h-6" />
+            <img src="/images/linkedin.png" alt="LinkedIn" loading="lazy" decoding="async" class="w-6 h-6" />
           </a>
           <a
             href="https://medium.com/@webstercharly"
@@ -68,7 +78,7 @@ const recentPosts = allPosts
             class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             aria-label="Medium"
           >
-            <img src="/images/medium.png" alt="Medium" class="w-6 h-6" />
+            <img src="/images/medium.png" alt="Medium" loading="lazy" decoding="async" class="w-6 h-6" />
           </a>
           <a
             href="https://twitter.com/webstercharly"
@@ -77,14 +87,14 @@ const recentPosts = allPosts
             class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             aria-label="Twitter"
           >
-            <img src="/images/twitter.png" alt="Twitter" class="w-6 h-6" />
+            <img src="/images/twitter.png" alt="Twitter" loading="lazy" decoding="async" class="w-6 h-6" />
           </a>
           <a
-            href="mailto:webstercharly@gmail.com"
+            href="mailto:webstercharly&#64;<!--nospam-->gmail&#46;com"
             class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             aria-label="Email"
           >
-            <img src="/images/email.png" alt="Email" class="w-6 h-6" />
+            <img src="/images/email.png" alt="Email" loading="lazy" decoding="async" class="w-6 h-6" />
           </a>
         </div>
 
@@ -97,7 +107,7 @@ const recentPosts = allPosts
             Read My Blog
           </a>
           <a
-            href="mailto:webstercharly@gmail.com"
+            href="mailto:webstercharly&#64;<!--nospam-->gmail&#46;com"
             class="px-8 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium rounded-lg transition-colors"
           >
             Get In Touch

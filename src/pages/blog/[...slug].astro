@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navigation from '../../components/Navigation.astro';
+import { WORDS_PER_MINUTE } from '../../lib/constants';
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection('blog');
@@ -14,7 +15,7 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await entry.render();
 
-const readingTime = Math.ceil(entry.body.split(/\s+/).length / 200); // ~200 words per minute
+const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE);
 ---
 
 <BaseLayout
@@ -26,7 +27,7 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / 200); // ~200 wor
 >
   <Navigation />
 
-  <main class="container py-12">
+  <main id="main-content" class="container py-12">
     <article class="max-w-3xl mx-auto">
       <!-- Article Header -->
       <header class="mb-12">
@@ -89,6 +90,8 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / 200); // ~200 wor
           <img
             src="/images/author.jpg"
             alt="Charly Webster"
+            loading="lazy"
+            decoding="async"
             class="w-16 h-16 rounded-full object-cover"
           />
           <div>
@@ -111,6 +114,34 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / 200); // ~200 wor
       </div>
     </article>
   </main>
+
+  <!-- Structured Data (JSON-LD) for SEO -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": entry.data.title,
+    "description": entry.data.description,
+    "datePublished": entry.data.pubDate.toISOString(),
+    "dateModified": entry.data.updatedDate?.toISOString() || entry.data.pubDate.toISOString(),
+    "author": {
+      "@type": "Person",
+      "name": entry.data.author,
+      "url": "https://charlywebster.com"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "Charly Webster",
+      "url": "https://charlywebster.com"
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://charlywebster.com/blog/${entry.slug}`
+    },
+    "keywords": entry.data.tags.join(", "),
+    "articleSection": "Engineering Leadership",
+    "wordCount": entry.body.split(/\s+/).length,
+    "timeRequired": `PT${readingTime}M`
+  })} />
 
   <!-- Giscus Script -->
   <script define:vars={{

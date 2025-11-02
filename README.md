@@ -15,7 +15,7 @@ A modern personal website and blog built with Astro, featuring markdown-based bl
 
 ## Tech Stack
 
-- **Framework**: Astro 4.x
+- **Framework**: Astro 5.x
 - **Language**: TypeScript (strict mode)
 - **Styling**: Custom CSS with CSS variables for theming
 - **Content**: Markdown/MDX for blog posts
@@ -26,7 +26,7 @@ A modern personal website and blog built with Astro, featuring markdown-based bl
 
 ### Prerequisites
 
-- Node.js 18.x or higher
+- Node.js 18.20 or higher
 - npm or yarn
 
 ### Installation

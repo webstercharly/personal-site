@@ -116,7 +116,7 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
   </main>
 
   <!-- Structured Data (JSON-LD) for SEO -->
-  <script type="application/ld+json" set:html={JSON.stringify({
+  <script is:inline type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": entry.data.title,
@@ -144,7 +144,7 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
   })} />
 
   <!-- Giscus Script -->
-  <script define:vars={{
+  <script is:inline define:vars={{
     giscusRepo: import.meta.env.PUBLIC_GISCUS_REPO,
     giscusRepoId: import.meta.env.PUBLIC_GISCUS_REPO_ID,
     giscusCategory: import.meta.env.PUBLIC_GISCUS_CATEGORY,

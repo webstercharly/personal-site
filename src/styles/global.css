@@ -1,6 +1,11 @@
-/* Self-hosted fonts */
+/* Self-hosted fonts - must be imported first */
 @import '@fontsource-variable/inter/wght.css';
 @import '@fontsource-variable/jetbrains-mono/wght.css';
+
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 *,
 *::before,

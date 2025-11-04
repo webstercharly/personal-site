@@ -7,6 +7,7 @@ const OUTPUT_DIR = './screenshots';
 
 const pages = [
   { name: 'home', path: '/' },
+  { name: 'home-retro', path: '/index-new' },
   { name: 'blog', path: '/blog' },
 ];
 

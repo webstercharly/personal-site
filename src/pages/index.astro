@@ -4,6 +4,15 @@ import Navigation from '../components/Navigation.astro';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import { RECENT_POSTS_COUNT, WORDS_PER_MINUTE } from '../lib/constants';
+import { Image } from 'astro:assets';
+
+// Import images from public folder
+import authorImg from '../../public/images/author.jpg';
+import githubIcon from '../../public/images/github.png';
+import linkedinIcon from '../../public/images/linkedin.png';
+import mediumIcon from '../../public/images/medium.png';
+import twitterIcon from '../../public/images/twitter.png';
+import emailIcon from '../../public/images/email.png';
 
 let recentPosts: CollectionEntry<'blog'>[] = [];
 
@@ -36,11 +45,13 @@ try {
     <section class="container py-20 md:py-32">
       <div class="max-w-4xl mx-auto text-center fade-in-up">
         <div class="mb-8">
-          <img
-            src="/images/author.jpg"
+          <Image
+            src={authorImg}
             alt="Charly Webster"
+            width={160}
+            height={160}
+            quality={85}
             loading="eager"
-            decoding="async"
             class="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto object-cover border-4 border-gray-200 dark:border-gray-700 shadow-lg float"
           />
         </div>
@@ -67,7 +78,7 @@ try {
             class="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-110 hover:shadow-md"
             aria-label="GitHub"
           >
-            <img src="/images/github.png" alt="GitHub" loading="lazy" decoding="async" class="w-7 h-7" />
+            <Image src={githubIcon} alt="GitHub" width={28} height={28} loading="lazy" class="w-7 h-7" />
           </a>
           <a
             href="https://www.linkedin.com/in/charlywebster"
@@ -76,7 +87,7 @@ try {
             class="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-110 hover:shadow-md"
             aria-label="LinkedIn"
           >
-            <img src="/images/linkedin.png" alt="LinkedIn" loading="lazy" decoding="async" class="w-7 h-7" />
+            <Image src={linkedinIcon} alt="LinkedIn" width={28} height={28} loading="lazy" class="w-7 h-7" />
           </a>
           <a
             href="https://medium.com/@CharlyWebster"
@@ -85,7 +96,7 @@ try {
             class="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-110 hover:shadow-md"
             aria-label="Medium"
           >
-            <img src="/images/medium.png" alt="Medium" loading="lazy" decoding="async" class="w-7 h-7" />
+            <Image src={mediumIcon} alt="Medium" width={28} height={28} loading="lazy" class="w-7 h-7" />
           </a>
           <a
             href="https://twitter.com/webstercharly"
@@ -94,14 +105,14 @@ try {
             class="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-110 hover:shadow-md"
             aria-label="Twitter"
           >
-            <img src="/images/twitter.png" alt="Twitter" loading="lazy" decoding="async" class="w-7 h-7" />
+            <Image src={twitterIcon} alt="Twitter" width={28} height={28} loading="lazy" class="w-7 h-7" />
           </a>
           <a
             href="mailto:charly.webster92&#64;<!--nospam-->gmail&#46;com"
             class="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-110 hover:shadow-md"
             aria-label="Email"
           >
-            <img src="/images/email.png" alt="Email" loading="lazy" decoding="async" class="w-7 h-7" />
+            <Image src={emailIcon} alt="Email" width={28} height={28} loading="lazy" class="w-7 h-7" />
           </a>
         </div>
 

@@ -31,8 +31,13 @@ interface Props {
 
 const { diagram, caption, theme = 'default' } = Astro.props;
 
+// Generate unique ID for this diagram
 const diagramId = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
+
+// Get slot content if no diagram prop provided
 const slotContent = diagram ? null : await Astro.slots.render('default');
+
+// HTML entity decoding for proper rendering
 function decodeHtmlEntities(text: string): string {
   const entities: Record<string, string> = {
     '&amp;': '&',
@@ -55,8 +60,34 @@ diagramContent = decodeHtmlEntities(diagramContent);
 ---
 
 <figure class="mermaid-component my-8">
-  <div class="mermaid-wrapper p-6 rounded-xl shadow-sm" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
-    <pre class="mermaid" style="background: transparent; text-align: center;" set:text={diagramContent}></pre>
+  <div
+    id={diagramId}
+    class="mermaid-wrapper p-6 rounded-xl shadow-sm overflow-auto"
+    style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"
+    data-theme={theme}
+  >
+    <pre class="mermaid" style="background: transparent; text-align: center;" data-diagram-content={diagramContent} set:text={diagramContent}></pre>
+
+    <!-- Error fallback (hidden by default) -->
+    <div class="mermaid-error hidden p-4 rounded-lg" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);">
+      <div class="flex items-start gap-3">
+        <span class="text-xl flex-shrink-0" style="color: rgb(239, 68, 68);" aria-hidden="true">⚠️</span>
+        <div class="flex-1">
+          <h4 class="text-sm font-semibold mb-2" style="color: var(--color-text);">
+            Diagram Failed to Render
+          </h4>
+          <p class="text-xs mb-3" style="color: var(--color-text-muted);">
+            The diagram could not be loaded. This may be due to invalid syntax or a network issue.
+          </p>
+          <details class="text-xs">
+            <summary class="cursor-pointer font-medium hover:underline mb-2" style="color: rgb(239, 68, 68);">
+              View diagram source
+            </summary>
+            <pre class="mt-2 p-3 rounded overflow-x-auto" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><code class="mermaid-source" style="color: var(--color-text);"></code></pre>
+          </details>
+        </div>
+      </div>
+    </div>
   </div>
 
   {caption && (
@@ -66,49 +97,112 @@ diagramContent = decodeHtmlEntities(diagramContent);
   )}
 </figure>
 
+<!-- Load Mermaid from CDN with error handling -->
 <script is:inline>
   if (!window.mermaidLoaded) {
     const script = document.createElement('script');
     script.type = 'module';
     script.textContent = `
-      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      // Helper to show error fallback
+      const showError = (element, error) => {
+        const container = element.closest('.mermaid-wrapper');
+        if (!container) return;
 
-      mermaid.initialize({
-        startOnLoad: false,
-        theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
-        securityLevel: 'loose',
-        fontFamily: 'Inter, system-ui, sans-serif',
-      });
+        const errorDiv = container.querySelector('.mermaid-error');
+        const sourceCode = container.querySelector('.mermaid-source');
+        const mermaidDiv = container.querySelector('.mermaid');
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-          mermaid.run({ querySelector: '.mermaid' }).catch(err => {
-            console.warn('Mermaid rendering failed:', err);
+        if (errorDiv && sourceCode && mermaidDiv) {
+          // Hide the diagram, show error
+          mermaidDiv.style.display = 'none';
+          errorDiv.classList.remove('hidden');
+
+          // Show source code
+          const content = mermaidDiv.getAttribute('data-diagram-content') || mermaidDiv.textContent;
+          sourceCode.textContent = content.trim();
+
+          // Log error for debugging
+          console.error('Mermaid diagram error:', error);
+        }
+      };
+
+      try {
+        // Import Mermaid with timeout
+        const loadTimeout = setTimeout(() => {
+          throw new Error('Mermaid CDN timeout');
+        }, 10000);
+
+        import('https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs')
+          .then(module => {
+            clearTimeout(loadTimeout);
+            const mermaid = module.default;
+
+            // Configure Mermaid with error callback
+            mermaid.initialize({
+              startOnLoad: false, // Manual control for better error handling
+              theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+              securityLevel: 'loose', // Use loose for better compatibility
+              fontFamily: 'Inter, system-ui, sans-serif',
+            });
+
+            // Render all diagrams with error handling
+            const renderDiagrams = async () => {
+              const diagrams = document.querySelectorAll('.mermaid:not([data-processed])');
+
+              for (const diagram of diagrams) {
+                try {
+                  await mermaid.run({ nodes: [diagram] });
+                } catch (error) {
+                  showError(diagram, error);
+                }
+              }
+            };
+
+            // Initial render
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', renderDiagrams);
+            } else {
+              renderDiagrams();
+            }
+
+            // Re-initialize when theme changes
+            window.addEventListener('theme-changed', () => {
+              const newTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'default';
+              mermaid.initialize({
+                startOnLoad: false,
+                theme: newTheme,
+                securityLevel: 'loose',
+                fontFamily: 'Inter, system-ui, sans-serif',
+              });
+
+              // Re-render all diagrams
+              document.querySelectorAll('.mermaid').forEach((element) => {
+                const graphDefinition = element.getAttribute('data-diagram-content') || element.textContent;
+                element.removeAttribute('data-processed');
+                element.textContent = graphDefinition;
+
+                // Hide any previous errors
+                const container = element.closest('.mermaid-wrapper');
+                const errorDiv = container?.querySelector('.mermaid-error');
+                if (errorDiv) {
+                  errorDiv.classList.add('hidden');
+                  element.style.display = '';
+                }
+              });
+
+              renderDiagrams();
+            });
+          })
+          .catch(error => {
+            // CDN load failed - show error on all diagrams
+            console.error('Failed to load Mermaid from CDN:', error);
+            document.querySelectorAll('.mermaid').forEach(diagram => {
+              showError(diagram, error);
+            });
           });
-        });
-      } else {
-        mermaid.run({ querySelector: '.mermaid' }).catch(err => {
-          console.warn('Mermaid rendering failed:', err);
-        });
+      } catch (error) {
+        console.error('Mermaid initialization error:', error);
       }
-
-      window.addEventListener('theme-changed', () => {
-        const newTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'default';
-        mermaid.initialize({
-          startOnLoad: false,
-          theme: newTheme,
-          securityLevel: 'loose',
-          fontFamily: 'Inter, system-ui, sans-serif',
-        });
-
-        document.querySelectorAll('.mermaid').forEach((element) => {
-          element.removeAttribute('data-processed');
-        });
-
-        mermaid.run({ querySelector: '.mermaid' }).catch(err => {
-          console.warn('Mermaid theme update failed:', err);
-        });
-      });
     `;
     document.head.appendChild(script);
     window.mermaidLoaded = true;

@@ -30,7 +30,7 @@ interface TimelineItem {
   title: string;
   description?: string;
   icon?: string;
-  color?: 'blue' | 'green' | 'purple' | 'orange' | 'red';
+  color?: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'emerald';
   link?: string;
 }
 
@@ -47,6 +47,7 @@ const colors = {
   purple: 'bg-purple-500',
   orange: 'bg-orange-500',
   red: 'bg-red-500',
+  emerald: 'bg-emerald-500',
 };
 
 const borderColors = {
@@ -55,6 +56,7 @@ const borderColors = {
   purple: 'border-purple-500',
   orange: 'border-orange-500',
   red: 'border-red-500',
+  emerald: 'border-emerald-500',
 };
 ---
 
@@ -98,7 +100,10 @@ const borderColors = {
               {item.link ? (
                 <a
                   href={item.link}
-                  class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  class="transition-colors"
+                  style="color: var(--color-text);"
+                  onmouseenter="this.style.color = 'var(--color-accent)'"
+                  onmouseleave="this.style.color = 'var(--color-text)'"
                 >
                   {item.title}
                 </a>

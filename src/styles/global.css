@@ -60,25 +60,31 @@ code {
   font-size: 0.9em;
 }
 
-/* Dark mode variables */
+/* Theme variables - Emerald & Charcoal */
 :root {
-  --color-bg: #ffffff;
-  --color-text: #1f2937;
-  --color-text-muted: #6b7280;
-  --color-border: #e5e7eb;
-  --color-accent: #3b82f6;
-  --color-accent-hover: #2563eb;
-  --color-card-bg: #f9fafb;
+  --color-bg: #fafafa;
+  --color-text: #18181b;
+  --color-text-muted: #71717a;
+  --color-border: #e4e4e7;
+  --color-accent: #10b981;
+  --color-accent-hover: #059669;
+  --color-accent-secondary: #047857;
+  --color-card-bg: #ffffff;
+  --gradient-from: #10b981;
+  --gradient-to: #047857;
 }
 
 .dark {
-  --color-bg: #111827;
-  --color-text: #f3f4f6;
-  --color-text-muted: #9ca3af;
-  --color-border: #374151;
-  --color-accent: #60a5fa;
-  --color-accent-hover: #93c5fd;
-  --color-card-bg: #1f2937;
+  --color-bg: #18181b;
+  --color-text: #fafafa;
+  --color-text-muted: #a1a1aa;
+  --color-border: #3f3f46;
+  --color-accent: #34d399;
+  --color-accent-hover: #10b981;
+  --color-accent-secondary: #059669;
+  --color-card-bg: #27272a;
+  --gradient-from: #34d399;
+  --gradient-to: #10b981;
 }
 
 /* Utility classes */
@@ -223,6 +229,107 @@ code {
   animation: fadeIn 0.5s ease-out;
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.gradient-animate {
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes blob {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(20px, -50px) scale(1.1);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  75% {
+    transform: translate(50px, 50px) scale(1.05);
+  }
+}
+
+.animate-blob {
+  animation: blob 20s ease-in-out infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Accessibility: Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .float,
+  .animate-blob,
+  .gradient-animate {
+    animation: none !important;
+  }
+}
+
 /* Focus indicators for keyboard navigation */
 *:focus-visible {
   outline: 2px solid var(--color-accent);
@@ -233,6 +340,44 @@ code {
 button:focus-visible,
 a:focus-visible {
   outline-offset: 4px;
+}
+
+/* Code block styling - works with Shiki dual theme */
+.prose :global(pre.astro-code) {
+  @apply rounded-xl shadow-lg border;
+  border-color: var(--color-border) !important;
+  padding: 1.5rem !important;
+  overflow-x: auto;
+  line-height: 1.7;
+  font-size: 0.875rem;
+  /* Override Shiki's inline background */
+  background-color: #f6f8fa !important;
+}
+
+.dark .prose :global(pre.astro-code) {
+  background-color: #0d1117 !important;
+}
+
+.prose :global(pre code) {
+  @apply bg-transparent p-0;
+  font-family: 'JetBrains Mono Variable', 'Courier New', monospace;
+  font-size: 0.875rem;
+  background: transparent !important;
+}
+
+/* Inline code styling */
+.prose :global(code):not(:global(pre code)) {
+  @apply px-2 py-1 rounded-md;
+  background-color: #f6f8fa;
+  color: #c93c37;
+  font-family: 'JetBrains Mono Variable', 'Courier New', monospace;
+  font-size: 0.875em;
+  font-weight: 500;
+}
+
+.dark .prose :global(code):not(:global(pre code)) {
+  background-color: #161b22;
+  color: #ff7b72;
 }
 
 /* Skip to content link for accessibility */
@@ -281,4 +426,21 @@ a:focus-visible {
 /* Email obfuscation helper */
 .email-anti-spam {
   display: none;
+}
+
+/* Giscus comments integration */
+.giscus,
+.giscus-frame {
+  width: 100% !important;
+}
+
+.giscus-frame {
+  border: none !important;
+  color-scheme: auto;
+}
+
+/* Make iframe seamless */
+#giscus-container iframe {
+  border: none !important;
+  background: transparent !important;
 }

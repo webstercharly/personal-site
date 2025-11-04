@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Navigation from '../components/Navigation.astro';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import { RECENT_POSTS_COUNT } from '../lib/constants';
+import { RECENT_POSTS_COUNT, WORDS_PER_MINUTE } from '../lib/constants';
 
 let recentPosts: CollectionEntry<'blog'>[] = [];
 
@@ -24,21 +24,28 @@ try {
 >
   <Navigation />
 
-  <main id="main-content">
+  <main id="main-content" class="relative overflow-hidden">
+    <!-- Animated Background -->
+    <div class="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+      <div class="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-emerald-200/30 to-emerald-400/20 dark:from-emerald-500/10 dark:to-emerald-700/10 rounded-full blur-3xl animate-blob"></div>
+      <div class="absolute top-1/3 right-1/4 w-96 h-96 bg-gradient-to-br from-teal-200/30 to-teal-400/20 dark:from-teal-500/10 dark:to-teal-700/10 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+      <div class="absolute bottom-1/4 left-1/3 w-96 h-96 bg-gradient-to-br from-green-200/30 to-green-400/20 dark:from-green-500/10 dark:to-green-700/10 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
+    </div>
+
     <!-- Hero Section -->
     <section class="container py-20 md:py-32">
-      <div class="max-w-4xl mx-auto text-center fade-in">
+      <div class="max-w-4xl mx-auto text-center fade-in-up">
         <div class="mb-8">
           <img
             src="/images/author.jpg"
             alt="Charly Webster"
             loading="eager"
             decoding="async"
-            class="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto object-cover border-4 border-gray-200 dark:border-gray-700 shadow-lg"
+            class="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto object-cover border-4 border-gray-200 dark:border-gray-700 shadow-lg float"
           />
         </div>
 
-        <h1 class="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <h1 class="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r gradient-animate bg-clip-text text-transparent" style="background-image: linear-gradient(to right, var(--gradient-from), var(--gradient-to));">
           Charly Webster
         </h1>
 
@@ -52,63 +59,64 @@ try {
         </p>
 
         <!-- Social Links -->
-        <div class="flex justify-center gap-4 mb-12">
+        <div class="flex justify-center gap-3 mb-16">
           <a
             href="https://github.com/webstercharly"
             target="_blank"
             rel="noopener noreferrer"
-            class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            class="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-110 hover:shadow-md"
             aria-label="GitHub"
           >
-            <img src="/images/github.png" alt="GitHub" loading="lazy" decoding="async" class="w-6 h-6" />
+            <img src="/images/github.png" alt="GitHub" loading="lazy" decoding="async" class="w-7 h-7" />
           </a>
           <a
-            href="https://www.linkedin.com/in/charly-webster"
+            href="https://www.linkedin.com/in/charlywebster"
             target="_blank"
             rel="noopener noreferrer"
-            class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            class="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-110 hover:shadow-md"
             aria-label="LinkedIn"
           >
-            <img src="/images/linkedin.png" alt="LinkedIn" loading="lazy" decoding="async" class="w-6 h-6" />
+            <img src="/images/linkedin.png" alt="LinkedIn" loading="lazy" decoding="async" class="w-7 h-7" />
           </a>
           <a
-            href="https://medium.com/@webstercharly"
+            href="https://medium.com/@CharlyWebster"
             target="_blank"
             rel="noopener noreferrer"
-            class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            class="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-110 hover:shadow-md"
             aria-label="Medium"
           >
-            <img src="/images/medium.png" alt="Medium" loading="lazy" decoding="async" class="w-6 h-6" />
+            <img src="/images/medium.png" alt="Medium" loading="lazy" decoding="async" class="w-7 h-7" />
           </a>
           <a
             href="https://twitter.com/webstercharly"
             target="_blank"
             rel="noopener noreferrer"
-            class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            class="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-110 hover:shadow-md"
             aria-label="Twitter"
           >
-            <img src="/images/twitter.png" alt="Twitter" loading="lazy" decoding="async" class="w-6 h-6" />
+            <img src="/images/twitter.png" alt="Twitter" loading="lazy" decoding="async" class="w-7 h-7" />
           </a>
           <a
-            href="mailto:webstercharly&#64;<!--nospam-->gmail&#46;com"
-            class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            href="mailto:charly.webster92&#64;<!--nospam-->gmail&#46;com"
+            class="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-110 hover:shadow-md"
             aria-label="Email"
           >
-            <img src="/images/email.png" alt="Email" loading="lazy" decoding="async" class="w-6 h-6" />
+            <img src="/images/email.png" alt="Email" loading="lazy" decoding="async" class="w-7 h-7" />
           </a>
         </div>
 
         <!-- CTA -->
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <div class="flex flex-col sm:flex-row gap-5 justify-center">
           <a
             href="/blog"
-            class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-lg hover:shadow-xl"
+            class="px-10 py-4 text-white font-semibold text-lg rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 hover:brightness-110"
+            style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));"
           >
             Read My Blog
           </a>
           <a
-            href="mailto:webstercharly&#64;<!--nospam-->gmail&#46;com"
-            class="px-8 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium rounded-lg transition-colors"
+            href="mailto:charly.webster92&#64;<!--nospam-->gmail&#46;com"
+            class="px-10 py-4 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-semibold text-lg rounded-xl transition-all duration-300 hover:scale-105 border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 shadow-md hover:shadow-lg"
           >
             Get In Touch
           </a>
@@ -118,30 +126,37 @@ try {
 
     <!-- Recent Posts Section -->
     {recentPosts.length > 0 && (
-      <section class="container py-16 border-t border-gray-200 dark:border-gray-800">
-        <div class="max-w-4xl mx-auto">
-          <div class="flex items-center justify-between mb-8">
+      <section class="container border-t border-gray-200 dark:border-gray-800">
+        <div class="max-w-4xl mx-auto pt-20 pb-8">
+          <div class="flex items-center justify-between mb-10">
             <h2 class="text-3xl font-bold">Recent Posts</h2>
             <a
               href="/blog"
-              class="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              class="font-medium hover:underline transition-colors"
+              style="color: var(--color-accent);"
             >
               View all →
             </a>
           </div>
 
           <div class="grid gap-6">
-            {recentPosts.map((post) => (
-              <article class="p-6 rounded-lg bg-gray-50 dark:bg-gray-800 hover:shadow-lg transition-shadow">
+            {recentPosts.map((post, index) => {
+              const readingTime = Math.ceil(post.body.split(/\s+/).length / WORDS_PER_MINUTE);
+              return (
+              <article class="p-6 rounded-lg bg-gray-50 dark:bg-gray-800 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] slide-in-right" style={`animation-delay: ${index * 0.1}s`}>
                 <a href={`/blog/${post.slug}`} class="group">
-                  <time class="text-sm text-gray-600 dark:text-gray-400">
-                    {post.data.pubDate.toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </time>
-                  <h3 class="text-xl font-bold mt-2 mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <div class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    <time>
+                      {post.data.pubDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </time>
+                    <span>•</span>
+                    <span>{readingTime} min read</span>
+                  </div>
+                  <h3 class="text-xl font-bold mb-3 transition-colors" style="color: var(--color-text);" onmouseenter="this.style.color = 'var(--color-accent)'" onmouseleave="this.style.color = 'var(--color-text)'">
                     {post.data.title}
                   </h3>
                   <p class="text-gray-700 dark:text-gray-300 mb-4">
@@ -150,7 +165,7 @@ try {
                   {post.data.tags.length > 0 && (
                     <div class="flex flex-wrap gap-2">
                       {post.data.tags.map((tag) => (
-                        <span class="px-3 py-1 text-xs font-medium rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                        <span class="px-3 py-1 text-xs font-medium rounded-full transition-all duration-200 hover:scale-110" style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to)); color: white; opacity: 0.9;">
                           {tag}
                         </span>
                       ))}
@@ -158,39 +173,40 @@ try {
                   )}
                 </a>
               </article>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
     )}
-
-    <!-- About Section -->
-    <section class="container py-16 border-t border-gray-200 dark:border-gray-800">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-3xl font-bold mb-6">About Me</h2>
-        <div class="prose dark:prose-invert max-w-none">
-          <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-            I'm a Head of Software Engineering with a passion for building excellent engineering teams
-            and scalable, reliable systems. My background includes extensive experience in software testing,
-            quality assurance, and engineering leadership.
-          </p>
-          <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-            I write about engineering leadership, software architecture, testing strategies, and the
-            practices that enable teams to ship high-quality software at scale.
-          </p>
-        </div>
-      </div>
-    </section>
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-gray-200 dark:border-gray-800 mt-20">
-    <div class="container py-8">
-      <div class="text-center text-gray-600 dark:text-gray-400 text-sm">
-        <p>&copy; {new Date().getFullYear()} Charly Webster. All rights reserved.</p>
-        <p class="mt-2">
-          Built with <a href="https://astro.build" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">Astro</a>
-        </p>
+  <footer class="border-t mt-20" style="border-color: var(--color-border); background: linear-gradient(to bottom, transparent, var(--color-card-bg));">
+    <div class="container py-12">
+      <div class="max-w-4xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+          <!-- Left side - Copyright -->
+          <div class="text-center md:text-left">
+            <p class="font-semibold text-lg mb-1" style="color: var(--color-text);">Charly Webster</p>
+            <p class="text-sm" style="color: var(--color-text-muted);">
+              &copy; {new Date().getFullYear()} All rights reserved.
+            </p>
+          </div>
+
+          <!-- Right side - Links -->
+          <div class="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+            <a href="/blog" class="text-sm font-medium hover:underline transition-colors" style="color: var(--color-text-muted);">Blog</a>
+            <a href="https://github.com/webstercharly" target="_blank" rel="noopener noreferrer" class="text-sm font-medium hover:underline transition-colors" style="color: var(--color-text-muted);">GitHub</a>
+            <a href="https://www.linkedin.com/in/charlywebster" target="_blank" rel="noopener noreferrer" class="text-sm font-medium hover:underline transition-colors" style="color: var(--color-text-muted);">LinkedIn</a>
+            <div class="flex items-center gap-2 text-sm" style="color: var(--color-text-muted);">
+              <span>Built with</span>
+              <a href="https://astro.build" target="_blank" rel="noopener noreferrer" class="font-medium hover:underline transition-colors inline-flex items-center gap-1" style="color: var(--color-accent);">
+                Astro
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </footer>

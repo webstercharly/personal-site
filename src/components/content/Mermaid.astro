@@ -31,66 +31,84 @@ interface Props {
 
 const { diagram, caption, theme = 'default' } = Astro.props;
 
-// Generate unique ID for this diagram
 const diagramId = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
+const slotContent = diagram ? null : await Astro.slots.render('default');
+function decodeHtmlEntities(text: string): string {
+  const entities: Record<string, string> = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#39;': "'",
+  };
+  let decoded = text.replace(/&[^;]+;/g, (entity) => entities[entity] || entity);
+
+  decoded = decoded.replace(/—>/g, '-->');
+  decoded = decoded.replace(/—\.—>/g, '-.->');
+  decoded = decoded.replace(/-\.—>/g, '-.->');
+
+  return decoded;
+}
+
+let diagramContent = diagram || (slotContent ? slotContent.replace(/<[^>]*>/g, '').trim() : '');
+diagramContent = decodeHtmlEntities(diagramContent);
 ---
 
 <figure class="mermaid-component my-8">
-  <div
-    id={diagramId}
-    class="mermaid-diagram p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-auto"
-    data-theme={theme}
-  >
-    <div class="mermaid">
-      {diagram || <slot />}
-    </div>
+  <div class="mermaid-wrapper p-6 rounded-xl shadow-sm" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+    <pre class="mermaid" style="background: transparent; text-align: center;" set:text={diagramContent}></pre>
   </div>
 
   {caption && (
-    <figcaption class="mt-3 text-sm text-center text-gray-600 dark:text-gray-400 italic">
+    <figcaption class="mt-3 text-sm text-center italic" style="color: var(--color-text-muted);">
       {caption}
     </figcaption>
   )}
 </figure>
 
-<!-- Load Mermaid from CDN -->
 <script is:inline>
-  // Only load Mermaid once
   if (!window.mermaidLoaded) {
     const script = document.createElement('script');
     script.type = 'module';
     script.textContent = `
       import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
 
-      // Configure Mermaid
       mermaid.initialize({
-        startOnLoad: true,
+        startOnLoad: false,
         theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
-        securityLevel: 'strict',
+        securityLevel: 'loose',
         fontFamily: 'Inter, system-ui, sans-serif',
       });
 
-      // Re-initialize when theme changes
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          mermaid.run({ querySelector: '.mermaid' }).catch(err => {
+            console.warn('Mermaid rendering failed:', err);
+          });
+        });
+      } else {
+        mermaid.run({ querySelector: '.mermaid' }).catch(err => {
+          console.warn('Mermaid rendering failed:', err);
+        });
+      }
+
       window.addEventListener('theme-changed', () => {
         const newTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'default';
         mermaid.initialize({
-          startOnLoad: true,
+          startOnLoad: false,
           theme: newTheme,
-          securityLevel: 'strict',
+          securityLevel: 'loose',
           fontFamily: 'Inter, system-ui, sans-serif',
         });
 
-        // Re-render all diagrams
         document.querySelectorAll('.mermaid').forEach((element) => {
-          const graphDefinition = element.textContent;
           element.removeAttribute('data-processed');
-          element.textContent = graphDefinition;
         });
-        mermaid.run();
-      });
 
-      // Initial render
-      mermaid.run();
+        mermaid.run({ querySelector: '.mermaid' }).catch(err => {
+          console.warn('Mermaid theme update failed:', err);
+        });
+      });
     `;
     document.head.appendChild(script);
     window.mermaidLoaded = true;
@@ -113,42 +131,23 @@ const diagramId = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
     }
   }
 
-  .mermaid-diagram {
+  .mermaid-wrapper {
     transition: all 0.3s ease;
   }
 
-  .mermaid-diagram:hover {
+  .mermaid-wrapper:hover {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
 
-  /* Style mermaid diagrams */
-  .mermaid-diagram :global(.mermaid) {
+  .mermaid-wrapper :global(.mermaid) {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 200px;
   }
 
-  .mermaid-diagram :global(svg) {
+  .mermaid-wrapper :global(svg) {
     max-width: 100%;
     height: auto;
-  }
-
-  /* Dark mode adjustments */
-  :global(.dark) .mermaid-diagram :global(.node rect),
-  :global(.dark) .mermaid-diagram :global(.node circle),
-  :global(.dark) .mermaid-diagram :global(.node ellipse),
-  :global(.dark) .mermaid-diagram :global(.node polygon) {
-    fill: #374151;
-    stroke: #6b7280;
-  }
-
-  :global(.dark) .mermaid-diagram :global(.node .label) {
-    color: #f3f4f6;
-  }
-
-  :global(.dark) .mermaid-diagram :global(.edgeLabel) {
-    background-color: #1f2937;
-    color: #f3f4f6;
   }
 </style>

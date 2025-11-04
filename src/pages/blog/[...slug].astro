@@ -27,14 +27,15 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
 >
   <Navigation />
 
-  <main id="main-content" class="container py-12">
+  <main id="main-content" class="container pb-12">
     <article class="max-w-3xl mx-auto">
       <!-- Article Header -->
-      <header class="mb-12">
-        <div class="mb-6">
+      <header class="pt-20 mb-16">
+        <div class="mb-8">
           <a
             href="/blog"
-            class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:underline"
+            class="inline-flex items-center hover:underline transition-colors"
+            style="color: var(--color-accent);"
           >
             ← Back to Blog
           </a>
@@ -44,7 +45,7 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
           {entry.data.title}
         </h1>
 
-        <div class="flex flex-wrap items-center gap-4 text-gray-600 dark:text-gray-400 mb-6">
+        <div class="flex flex-wrap items-center gap-4 mb-6" style="color: var(--color-text-muted);">
           <time>
             {entry.data.pubDate.toLocaleDateString('en-US', {
               year: 'numeric',
@@ -59,7 +60,7 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
         </div>
 
         {entry.data.updatedDate && (
-          <p class="text-sm text-gray-600 dark:text-gray-400 italic">
+          <p class="text-sm italic" style="color: var(--color-text-muted);">
             Updated: {entry.data.updatedDate.toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
@@ -71,7 +72,7 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
         {entry.data.tags.length > 0 && (
           <div class="flex flex-wrap gap-2 mt-6">
             {entry.data.tags.map((tag) => (
-              <span class="px-3 py-1 text-sm font-medium rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+              <span class="px-3 py-1 text-sm font-medium rounded-full transition-all duration-200 hover:scale-110" style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to)); color: white; opacity: 0.9;">
                 {tag}
               </span>
             ))}
@@ -85,7 +86,7 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
       </div>
 
       <!-- Author Info -->
-      <div class="border-t border-b border-gray-200 dark:border-gray-700 py-8 my-12">
+      <div class="border-t border-b py-8 my-12" style="border-color: var(--color-border);">
         <div class="flex items-start gap-4">
           <img
             src="/images/author.jpg"
@@ -99,18 +100,20 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
             <p class="text-gray-700 dark:text-gray-300">
               Head of Software Engineering with a passion for building high-performing teams
               and scalable systems. Follow me on
-              <a href="https://twitter.com/webstercharly" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">Twitter</a>
+              <a href="https://twitter.com/webstercharly" target="_blank" rel="noopener noreferrer" class="hover:underline transition-colors" style="color: var(--color-accent);">Twitter</a>
               or
-              <a href="https://www.linkedin.com/in/charly-webster" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">LinkedIn</a>.
+              <a href="https://www.linkedin.com/in/charlywebster" target="_blank" rel="noopener noreferrer" class="hover:underline transition-colors" style="color: var(--color-accent);">LinkedIn</a>.
             </p>
           </div>
         </div>
       </div>
 
       <!-- Comments Section (giscus) -->
-      <div class="mt-12">
-        <h2 class="text-2xl font-bold mb-6">Comments</h2>
-        <div id="giscus-container" class="giscus"></div>
+      <div class="mt-16 -mx-4 md:-mx-12 lg:-mx-24">
+        <div class="px-6 py-8">
+          <h2 class="text-2xl font-bold mb-6" style="color: var(--color-text);">Comments</h2>
+          <div id="giscus-container" class="giscus"></div>
+        </div>
       </div>
     </article>
   </main>
@@ -150,61 +153,68 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
     giscusCategory: import.meta.env.PUBLIC_GISCUS_CATEGORY,
     giscusCategoryId: import.meta.env.PUBLIC_GISCUS_CATEGORY_ID
   }}>
-    // Giscus configuration from environment variables
-    const giscusTheme = document.documentElement.classList.contains('dark')
-      ? 'dark'
-      : 'light';
+    // Wait for DOM to be fully loaded and theme to be applied
+    function loadGiscus() {
+      // Add a small delay to ensure dark mode script has completed
+      setTimeout(() => {
+        const hasDarkClass = document.documentElement.classList.contains('dark');
+        // Use explicit theme names - GitHub's light/dark themes
+        const giscusTheme = hasDarkClass ? 'dark' : 'light_high_contrast';
 
-    // Validate configuration before loading
-    if (!giscusRepoId || !giscusCategoryId) {
-      console.warn('Giscus not fully configured. Set PUBLIC_GISCUS_REPO_ID and PUBLIC_GISCUS_CATEGORY_ID in .env');
-      const container = document.getElementById('giscus-container');
-      if (container) {
-        container.innerHTML = '<p class="text-gray-600 dark:text-gray-400 italic">Comments will be available once giscus is configured. See README for setup instructions.</p>';
-      }
-    } else {
-      const giscusAttributes = {
-        src: 'https://giscus.app/client.js',
-        'data-repo': giscusRepo || '',
-        'data-repo-id': giscusRepoId,
-        'data-category': giscusCategory || 'Comments',
-        'data-category-id': giscusCategoryId,
-        'data-mapping': 'pathname',
-        'data-strict': '0',
-        'data-reactions-enabled': '1',
-        'data-emit-metadata': '0',
-        'data-input-position': 'top',
-        'data-theme': giscusTheme,
-        'data-lang': 'en',
-        'data-loading': 'lazy',
-        crossorigin: 'anonymous',
-        async: '',
-      };
-
-      const giscusScript = document.createElement('script');
-      Object.entries(giscusAttributes).forEach(([key, value]) => {
-        giscusScript.setAttribute(key, value);
-      });
-
-      document.getElementById('giscus-container')?.appendChild(giscusScript);
+        loadGiscusWithTheme(giscusTheme);
+      }, 100);
     }
 
-    // Validate incoming messages from giscus iframe (security)
-    window.addEventListener('message', (event) => {
-      // Only accept messages from giscus
-      if (event.origin !== 'https://giscus.app') {
-        return;
-      }
-      // Messages from giscus are safe to process
-    });
+    function loadGiscusWithTheme(giscusTheme) {
 
-    // Update giscus theme when toggling dark mode
-    const observer = new MutationObserver(() => {
+      // Validate configuration before loading
+      if (!giscusRepoId || !giscusCategoryId) {
+        console.warn('Giscus not fully configured. Set PUBLIC_GISCUS_REPO_ID and PUBLIC_GISCUS_CATEGORY_ID in .env');
+        const container = document.getElementById('giscus-container');
+        if (container) {
+          container.innerHTML = '<p class="text-gray-600 dark:text-gray-400 italic">Comments will be available once giscus is configured. See README for setup instructions.</p>';
+        }
+      } else {
+        const giscusAttributes = {
+          src: 'https://giscus.app/client.js',
+          'data-repo': giscusRepo || '',
+          'data-repo-id': giscusRepoId,
+          'data-category': giscusCategory || 'Comments',
+          'data-category-id': giscusCategoryId,
+          'data-mapping': 'pathname',
+          'data-strict': '0',
+          'data-reactions-enabled': '1',
+          'data-emit-metadata': '0',
+          'data-input-position': 'top',
+          'data-theme': giscusTheme,
+          'data-lang': 'en',
+          'data-loading': 'lazy',
+          crossorigin: 'anonymous',
+          async: '',
+        };
+
+        const giscusScript = document.createElement('script');
+        Object.entries(giscusAttributes).forEach(([key, value]) => {
+          giscusScript.setAttribute(key, value);
+        });
+
+        document.getElementById('giscus-container')?.appendChild(giscusScript);
+      }
+
+      window.addEventListener('message', (event) => {
+        if (event.origin !== 'https://giscus.app') {
+          return;
+        }
+      });
+
+    }
+
+    const updateGiscusTheme = new MutationObserver(() => {
       const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
       if (iframe?.contentWindow) {
         const theme = document.documentElement.classList.contains('dark')
           ? 'dark'
-          : 'light';
+          : 'light_high_contrast';
         iframe.contentWindow.postMessage(
           { giscus: { setConfig: { theme } } },
           'https://giscus.app'
@@ -212,9 +222,15 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
       }
     });
 
-    observer.observe(document.documentElement, {
+    updateGiscusTheme.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['class'],
     });
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadGiscus);
+    } else {
+      loadGiscus();
+    }
   </script>
 </BaseLayout>

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run screenshots:*)",
+      "Bash(git log:*)",
+      "WebFetch(domain:mermaid.js.org)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

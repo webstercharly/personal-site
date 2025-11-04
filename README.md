@@ -187,5 +187,5 @@ MIT License - feel free to use this as a template for your own site!
 
 - Website: [charlywebster.com](https://charlywebster.com)
 - Twitter: [@webstercharly](https://twitter.com/webstercharly)
-- LinkedIn: [charly-webster](https://www.linkedin.com/in/charly-webster)
-- Email: webstercharly@gmail.com
+- LinkedIn: [charlywebster](https://www.linkedin.com/in/charlywebster)
+- Email: charly.webster92@gmail.com

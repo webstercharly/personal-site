@@ -1,0 +1,83 @@
+---
+// Theme Switcher Component
+---
+
+<div class="flex items-center gap-2">
+  <button
+    id="color-theme-toggle"
+    type="button"
+    class="px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 border border-gray-300 dark:border-gray-600"
+    aria-label="Change color theme"
+  >
+    <span id="current-theme-name">Original</span>
+  </button>
+</div>
+
+<script>
+  const themes = [
+    { id: null, name: 'Original' },
+    { id: 'slate-cyan', name: 'Slate & Cyan' },
+    { id: 'emerald-charcoal', name: 'Emerald' },
+    { id: 'mono-electric', name: 'Electric' },
+  ];
+
+  let currentThemeIndex = 0;
+
+  function initTheme() {
+    const stored = localStorage.getItem('colorTheme');
+    const index = themes.findIndex(t => t.id === stored);
+    if (index !== -1) {
+      currentThemeIndex = index;
+      applyTheme(currentThemeIndex, false);
+    }
+    updateThemeName();
+  }
+
+  function applyTheme(index: number, animate = true) {
+    const theme = themes[index];
+    const root = document.documentElement;
+
+    // Add transition class for smooth color changes
+    if (animate) {
+      root.style.transition = 'all 0.3s ease';
+      setTimeout(() => {
+        root.style.transition = '';
+      }, 300);
+    }
+
+    if (theme.id) {
+      root.setAttribute('data-theme', theme.id);
+      localStorage.setItem('colorTheme', theme.id);
+    } else {
+      root.removeAttribute('data-theme');
+      localStorage.removeItem('colorTheme');
+    }
+  }
+
+  function updateThemeName() {
+    const nameElement = document.getElementById('current-theme-name');
+    if (nameElement) {
+      nameElement.textContent = themes[currentThemeIndex].name;
+    }
+  }
+
+  function cycleTheme() {
+    currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+    applyTheme(currentThemeIndex);
+    updateThemeName();
+  }
+
+  // Initialize on page load
+  initTheme();
+
+  // Add click handler
+  const toggleButton = document.getElementById('color-theme-toggle');
+  toggleButton?.addEventListener('click', cycleTheme);
+
+  // Listen for navigation events to reinitialize
+  document.addEventListener('astro:page-load', () => {
+    initTheme();
+    const button = document.getElementById('color-theme-toggle');
+    button?.addEventListener('click', cycleTheme);
+  });
+</script>

@@ -19,7 +19,7 @@
 interface ChartData {
   label: string;
   value: number;
-  color?: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'yellow';
+  color?: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'yellow' | 'emerald';
   description?: string;
 }
 
@@ -55,6 +55,7 @@ const colors = {
   orange: 'bg-orange-500',
   red: 'bg-red-500',
   yellow: 'bg-yellow-500',
+  emerald: 'bg-emerald-500',
 };
 
 const heights = {
@@ -64,43 +65,42 @@ const heights = {
 };
 ---
 
-<div class="chart-component my-8 p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+<div class="chart-component my-8 p-6 rounded-xl shadow-sm" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
   {title && (
-    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+    <h3 class="text-xl font-bold mb-6 mt-0" style="color: var(--color-text);">
       {title}
     </h3>
   )}
 
-  <div class="space-y-4">
+  <div class="space-y-5">
     {dataWithPercentages.map((item) => (
-      <div class="chart-bar-wrapper">
-        <div class="flex justify-between items-baseline mb-2">
-          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+      <div class="chart-bar-wrapper group">
+        <div class="flex justify-between items-baseline mb-3">
+          <span class="text-sm font-semibold" style="color: var(--color-text);">
             {item.label}
           </span>
-          <span class="text-lg font-bold text-gray-900 dark:text-gray-100">
+          <span class="text-xl font-bold" style="color: var(--color-accent);">
             {item.value}{unit}
           </span>
         </div>
 
-        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-          <div
-            class={`${colors[item.color || 'blue']} ${heights[height]} rounded-full transition-all duration-1000 ease-out flex items-center justify-end pr-3`}
-            style={`width: ${item.percentage}%`}
-            role="progressbar"
-            aria-valuenow={item.value}
-            aria-valuemin={0}
-            aria-valuemax={maxValue}
-            aria-label={`${item.label}: ${item.value}${unit}`}
-          >
-            <span class="text-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-              {Math.round(item.percentage)}%
-            </span>
+        <div class="relative">
+          <div class="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div
+              class={`${colors[item.color || 'emerald']} h-full rounded-full transition-all duration-1000 ease-out`}
+              style={`width: ${item.percentage}%`}
+              role="progressbar"
+              aria-valuenow={item.value}
+              aria-valuemin={0}
+              aria-valuemax={maxValue}
+              aria-label={`${item.label}: ${item.value}${unit}`}
+            >
+            </div>
           </div>
         </div>
 
         {item.description && (
-          <p class="mt-1 text-xs text-gray-600 dark:text-gray-400">
+          <p class="mt-2 text-xs" style="color: var(--color-text-muted);">
             {item.description}
           </p>
         )}
@@ -112,6 +112,10 @@ const heights = {
 <style>
   .chart-component {
     animation: fadeIn 0.5s ease-out;
+  }
+
+  .chart-component h3 {
+    margin-top: 0 !important;
   }
 
   @keyframes fadeIn {
@@ -141,13 +145,17 @@ const heights = {
   }
 
   /* Animate bars on page load */
-  .chart-bar-wrapper > div > div {
-    animation: expandBar 1s ease-out;
+  .chart-bar-wrapper > div > div > div {
+    animation: expandBar 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
   @keyframes expandBar {
     from {
       width: 0 !important;
     }
+  }
+
+  .chart-bar-wrapper:hover > div > div > div {
+    filter: brightness(1.1);
   }
 </style>

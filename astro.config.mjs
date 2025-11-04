@@ -3,17 +3,22 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
 
-// https://astro.build/config
 export default defineConfig({
-  site: 'https://charlywebster.com', // Update with your actual domain
+  site: 'https://charlywebster.com',
+  devToolbar: {
+    enabled: false
+  },
   integrations: [
     mdx(),
     sitemap(),
-    tailwind({ applyBaseStyles: false }), // Don't apply base styles, we have our own
+    tailwind({ applyBaseStyles: false }),
   ],
   markdown: {
     shikiConfig: {
-      theme: 'github-dark',
+      themes: {
+        light: 'github-light',
+        dark: 'github-dark',
+      },
       wrap: true,
     },
   },

@@ -13,7 +13,7 @@ interface Props {
   description?: string;
   trend?: 'up' | 'down' | 'neutral';
   icon?: string;
-  color?: 'blue' | 'green' | 'purple' | 'orange';
+  color?: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'emerald';
 }
 
 const {
@@ -22,7 +22,7 @@ const {
   description,
   trend,
   icon,
-  color = 'blue',
+  color = 'emerald',
 } = Astro.props;
 
 const colors = {
@@ -30,6 +30,8 @@ const colors = {
   green: 'from-green-500 to-green-600',
   purple: 'from-purple-500 to-purple-600',
   orange: 'from-orange-500 to-orange-600',
+  red: 'from-red-500 to-red-600',
+  emerald: 'from-emerald-500 to-emerald-600',
 };
 
 const trendIcons = {

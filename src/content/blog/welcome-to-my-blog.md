@@ -28,6 +28,6 @@ Whether you're a new engineering manager, a senior engineer considering leadersh
 
 ## Let's Connect
 
-I'd love to hear from you! Feel free to leave comments on posts (powered by GitHub Discussions), or reach out to me on [Twitter](https://twitter.com/webstercharly) or [LinkedIn](https://www.linkedin.com/in/charly-webster).
+I'd love to hear from you! Feel free to leave comments on posts (powered by GitHub Discussions), or reach out to me on [Twitter](https://twitter.com/webstercharly) or [LinkedIn](https://www.linkedin.com/in/charlywebster).
 
 Thanks for reading, and welcome aboard!

@@ -35,7 +35,7 @@ const {
 
 const layoutClass =
   layout === 'horizontal'
-    ? 'grid grid-cols-1 lg:grid-cols-2 gap-4'
+    ? 'grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch'
     : 'flex flex-col gap-4';
 ---
 
@@ -48,27 +48,27 @@ const layoutClass =
 
   <div class={layoutClass}>
     <!-- Before Section -->
-    <div class="comparison-section before">
+    <div class="comparison-section before flex flex-col">
       <div class="flex items-center gap-2 mb-3">
         <span class="text-red-600 dark:text-red-400 text-xl" aria-hidden="true">❌</span>
         <h4 class="text-sm font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
           {beforeLabel}
         </h4>
       </div>
-      <div class="comparison-content border-l-4 border-red-500 pl-4">
+      <div class="comparison-content border-l-4 border-red-500 pl-4 flex-1">
         <slot name="before" />
       </div>
     </div>
 
     <!-- After Section -->
-    <div class="comparison-section after">
+    <div class="comparison-section after flex flex-col">
       <div class="flex items-center gap-2 mb-3">
         <span class="text-green-600 dark:text-green-400 text-xl" aria-hidden="true">✅</span>
         <h4 class="text-sm font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide">
           {afterLabel}
         </h4>
       </div>
-      <div class="comparison-content border-l-4 border-green-500 pl-4">
+      <div class="comparison-content border-l-4 border-green-500 pl-4 flex-1">
         <slot name="after" />
       </div>
     </div>
@@ -78,6 +78,10 @@ const layoutClass =
 <style>
   .code-comparison {
     animation: fadeIn 0.5s ease-out;
+  }
+
+  .code-comparison h3 {
+    margin-top: 0 !important;
   }
 
   @keyframes fadeIn {
@@ -93,6 +97,9 @@ const layoutClass =
 
   .comparison-section {
     animation: slideIn 0.6s ease-out;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 
   @keyframes slideIn {
@@ -104,9 +111,17 @@ const layoutClass =
     }
   }
 
+  .comparison-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
   .comparison-content :global(pre) {
     margin: 0;
     border-radius: 0.5rem;
+    flex: 1;
   }
 
   .comparison-content :global(code) {

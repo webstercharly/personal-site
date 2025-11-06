@@ -1,20 +1,4 @@
 ---
-/**
- * Enhanced Image Component
- *
- * Image with caption, optional zoom, lazy loading, and responsive sizing
- *
- * Usage:
- * <Image
- *   src="/images/architecture.png"
- *   alt="System architecture diagram"
- *   caption="Our microservices architecture as of 2024"
- *   width={800}
- *   height={600}
- *   zoomable={true}
- * />
- */
-
 interface Props {
   src: string;
   alt: string;
@@ -24,7 +8,7 @@ interface Props {
   width?: number;
   height?: number;
   zoomable?: boolean;
-  priority?: boolean; // Load immediately without lazy loading
+  priority?: boolean;
   size?: 'sm' | 'md' | 'lg' | 'full';
 }
 
@@ -97,7 +81,6 @@ const loadingStrategy = priority ? 'eager' : 'lazy';
 
 {zoomable && (
   <script>
-    // Simple lightbox functionality
     document.addEventListener('DOMContentLoaded', () => {
       const zoomableImages = document.querySelectorAll('.image-wrapper.cursor-zoom-in');
 
@@ -106,7 +89,6 @@ const loadingStrategy = priority ? 'eager' : 'lazy';
           const img = wrapper.querySelector('img');
           if (!img) return;
 
-          // Create lightbox
           const lightbox = document.createElement('div');
           lightbox.className = 'fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4 cursor-zoom-out';
           lightbox.style.animation = 'fadeIn 0.2s ease-out';
@@ -125,10 +107,8 @@ const loadingStrategy = priority ? 'eager' : 'lazy';
           document.body.appendChild(lightbox);
           document.body.style.overflow = 'hidden';
 
-          // Focus lightbox for accessibility
           lightbox.focus();
 
-          // Close on click
           lightbox.addEventListener('click', () => {
             lightbox.style.animation = 'fadeOut 0.2s ease-out';
             setTimeout(() => {
@@ -137,7 +117,6 @@ const loadingStrategy = priority ? 'eager' : 'lazy';
             }, 200);
           });
 
-          // Close on Escape key
           const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
               lightbox.click();

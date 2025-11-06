@@ -15,7 +15,6 @@ try {
     .filter(post => !post.data.draft)
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
-  // Group posts by year
   postsByYear = posts.reduce((acc, post) => {
     const year = post.data.pubDate.getFullYear();
     if (!acc[year]) {
@@ -39,7 +38,6 @@ try {
 
   <main id="main-content" class="container pb-12">
     <div class="max-w-4xl mx-auto">
-      <!-- Header -->
       <div class="pt-20 mb-12">
         <h1 class="text-4xl md:text-5xl font-bold mb-6">Blog</h1>
         <p class="text-lg" style="color: var(--color-text-muted);">
@@ -47,7 +45,6 @@ try {
         </p>
       </div>
 
-      <!-- Posts by Year -->
       {posts.length === 0 ? (
         <div class="text-center py-12">
           <p class="text-gray-600 dark:text-gray-400 text-lg">

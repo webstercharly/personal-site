@@ -2,7 +2,6 @@
 const currentPath = Astro.url.pathname;
 ---
 
-<!-- Skip to main content for accessibility -->
 <a href="#main-content" class="skip-link">
   Skip to main content
 </a>
@@ -55,12 +54,10 @@ const currentPath = Astro.url.pathname;
 </nav>
 
 <script>
-  // Theme toggle functionality
   const themeToggle = document.getElementById('theme-toggle');
   const darkIcon = document.getElementById('theme-toggle-dark-icon');
   const lightIcon = document.getElementById('theme-toggle-light-icon');
 
-  // Set initial icon state
   if (document.documentElement.classList.contains('dark')) {
     lightIcon?.classList.remove('hidden');
   } else {
@@ -68,14 +65,9 @@ const currentPath = Astro.url.pathname;
   }
 
   themeToggle?.addEventListener('click', () => {
-    // Toggle dark mode
     document.documentElement.classList.toggle('dark');
-
-    // Toggle icons
     darkIcon?.classList.toggle('hidden');
     lightIcon?.classList.toggle('hidden');
-
-    // Save preference
     const isDark = document.documentElement.classList.contains('dark');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
   });

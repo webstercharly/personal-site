@@ -1,28 +1,4 @@
 ---
-/**
- * Mermaid Diagram Component
- *
- * Renders Mermaid diagrams for flowcharts, sequence diagrams, architecture, etc.
- *
- * Usage:
- * <Mermaid
- *   diagram={`
- *     graph TD
- *       A[Client] --> B[Load Balancer]
- *       B --> C[Server1]
- *       B --> D[Server2]
- *   `}
- *   caption="Load balancer architecture"
- * />
- *
- * Or use the slot:
- * <Mermaid caption="My Diagram">
- *   graph TD
- *     A[Start] --> B[Process]
- *     B --> C[End]
- * </Mermaid>
- */
-
 interface Props {
   diagram?: string;
   caption?: string;
@@ -31,13 +7,10 @@ interface Props {
 
 const { diagram, caption, theme = 'default' } = Astro.props;
 
-// Generate unique ID for this diagram
 const diagramId = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
 
-// Get slot content if no diagram prop provided
 const slotContent = diagram ? null : await Astro.slots.render('default');
 
-// HTML entity decoding for proper rendering
 function decodeHtmlEntities(text: string): string {
   const entities: Record<string, string> = {
     '&amp;': '&',
@@ -68,7 +41,6 @@ diagramContent = decodeHtmlEntities(diagramContent);
   >
     <pre class="mermaid" style="background: transparent; text-align: center;" data-diagram-content={diagramContent} set:text={diagramContent}></pre>
 
-    <!-- Error fallback (hidden by default) -->
     <div class="mermaid-error hidden p-4 rounded-lg" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);">
       <div class="flex items-start gap-3">
         <span class="text-xl flex-shrink-0" style="color: rgb(239, 68, 68);" aria-hidden="true">⚠️</span>
@@ -97,13 +69,11 @@ diagramContent = decodeHtmlEntities(diagramContent);
   )}
 </figure>
 
-<!-- Load Mermaid from CDN with error handling -->
 <script is:inline>
   if (!window.mermaidLoaded) {
     const script = document.createElement('script');
     script.type = 'module';
     script.textContent = `
-      // Helper to show error fallback
       const showError = (element, error) => {
         const container = element.closest('.mermaid-wrapper');
         if (!container) return;
@@ -113,21 +83,17 @@ diagramContent = decodeHtmlEntities(diagramContent);
         const mermaidDiv = container.querySelector('.mermaid');
 
         if (errorDiv && sourceCode && mermaidDiv) {
-          // Hide the diagram, show error
           mermaidDiv.style.display = 'none';
           errorDiv.classList.remove('hidden');
 
-          // Show source code
           const content = mermaidDiv.getAttribute('data-diagram-content') || mermaidDiv.textContent;
           sourceCode.textContent = content.trim();
 
-          // Log error for debugging
           console.error('Mermaid diagram error:', error);
         }
       };
 
       try {
-        // Import Mermaid with timeout
         const loadTimeout = setTimeout(() => {
           throw new Error('Mermaid CDN timeout');
         }, 10000);
@@ -137,15 +103,13 @@ diagramContent = decodeHtmlEntities(diagramContent);
             clearTimeout(loadTimeout);
             const mermaid = module.default;
 
-            // Configure Mermaid with error callback
             mermaid.initialize({
-              startOnLoad: false, // Manual control for better error handling
+              startOnLoad: false,
               theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
-              securityLevel: 'loose', // Use loose for better compatibility
+              securityLevel: 'loose',
               fontFamily: 'Inter, system-ui, sans-serif',
             });
 
-            // Render all diagrams with error handling
             const renderDiagrams = async () => {
               const diagrams = document.querySelectorAll('.mermaid:not([data-processed])');
 
@@ -158,14 +122,12 @@ diagramContent = decodeHtmlEntities(diagramContent);
               }
             };
 
-            // Initial render
             if (document.readyState === 'loading') {
               document.addEventListener('DOMContentLoaded', renderDiagrams);
             } else {
               renderDiagrams();
             }
 
-            // Re-initialize when theme changes
             window.addEventListener('theme-changed', () => {
               const newTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'default';
               mermaid.initialize({
@@ -175,13 +137,11 @@ diagramContent = decodeHtmlEntities(diagramContent);
                 fontFamily: 'Inter, system-ui, sans-serif',
               });
 
-              // Re-render all diagrams
               document.querySelectorAll('.mermaid').forEach((element) => {
                 const graphDefinition = element.getAttribute('data-diagram-content') || element.textContent;
                 element.removeAttribute('data-processed');
                 element.textContent = graphDefinition;
 
-                // Hide any previous errors
                 const container = element.closest('.mermaid-wrapper');
                 const errorDiv = container?.querySelector('.mermaid-error');
                 if (errorDiv) {
@@ -194,7 +154,6 @@ diagramContent = decodeHtmlEntities(diagramContent);
             });
           })
           .catch(error => {
-            // CDN load failed - show error on all diagrams
             console.error('Failed to load Mermaid from CDN:', error);
             document.querySelectorAll('.mermaid').forEach(diagram => {
               showError(diagram, error);

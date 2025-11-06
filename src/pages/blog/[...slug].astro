@@ -29,7 +29,6 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
 
   <main id="main-content" class="container pb-12">
     <article class="max-w-3xl mx-auto">
-      <!-- Article Header -->
       <header class="pt-20 mb-16">
         <div class="mb-8">
           <a
@@ -80,12 +79,10 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
         )}
       </header>
 
-      <!-- Article Content -->
       <div class="prose prose-lg dark:prose-invert max-w-none mb-12">
         <Content />
       </div>
 
-      <!-- Author Info -->
       <div class="border-t border-b py-8 my-12" style="border-color: var(--color-border);">
         <div class="flex items-start gap-4">
           <img
@@ -108,7 +105,6 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
         </div>
       </div>
 
-      <!-- Comments Section (giscus) -->
       <div class="mt-16 -mx-4 md:-mx-12 lg:-mx-24">
         <div class="px-6 py-8">
           <h2 class="text-2xl font-bold mb-6" style="color: var(--color-text);">Comments</h2>
@@ -118,7 +114,6 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
     </article>
   </main>
 
-  <!-- Structured Data (JSON-LD) for SEO -->
   <script is:inline type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -146,80 +141,55 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
     "timeRequired": `PT${readingTime}M`
   })} />
 
-  <!-- Giscus Script -->
   <script is:inline define:vars={{
     giscusRepo: import.meta.env.PUBLIC_GISCUS_REPO,
     giscusRepoId: import.meta.env.PUBLIC_GISCUS_REPO_ID,
     giscusCategory: import.meta.env.PUBLIC_GISCUS_CATEGORY,
     giscusCategoryId: import.meta.env.PUBLIC_GISCUS_CATEGORY_ID
   }}>
-    // Wait for DOM to be fully loaded and theme to be applied
     function loadGiscus() {
-      // Add a small delay to ensure dark mode script has completed
-      setTimeout(() => {
-        const hasDarkClass = document.documentElement.classList.contains('dark');
-        // Use explicit theme names - GitHub's light/dark themes
-        const giscusTheme = hasDarkClass ? 'dark' : 'light_high_contrast';
+      const container = document.getElementById('giscus-container');
+      if (!container) return;
 
-        loadGiscusWithTheme(giscusTheme);
-      }, 100);
-    }
-
-    function loadGiscusWithTheme(giscusTheme) {
-
-      // Validate configuration before loading
       if (!giscusRepoId || !giscusCategoryId) {
         console.warn('Giscus not fully configured. Set PUBLIC_GISCUS_REPO_ID and PUBLIC_GISCUS_CATEGORY_ID in .env');
-        const container = document.getElementById('giscus-container');
-        if (container) {
-          container.innerHTML = '<p class="text-gray-600 dark:text-gray-400 italic">Comments will be available once giscus is configured. See README for setup instructions.</p>';
-        }
-      } else {
-        const giscusAttributes = {
-          src: 'https://giscus.app/client.js',
-          'data-repo': giscusRepo || '',
-          'data-repo-id': giscusRepoId,
-          'data-category': giscusCategory || 'Comments',
-          'data-category-id': giscusCategoryId,
-          'data-mapping': 'pathname',
-          'data-strict': '0',
-          'data-reactions-enabled': '1',
-          'data-emit-metadata': '0',
-          'data-input-position': 'top',
-          'data-theme': giscusTheme,
-          'data-lang': 'en',
-          'data-loading': 'lazy',
-          crossorigin: 'anonymous',
-          async: '',
-        };
-
-        const giscusScript = document.createElement('script');
-        Object.entries(giscusAttributes).forEach(([key, value]) => {
-          giscusScript.setAttribute(key, value);
-        });
-
-        document.getElementById('giscus-container')?.appendChild(giscusScript);
+        container.innerHTML = '<p class="text-gray-600 dark:text-gray-400 italic">Comments will be available once giscus is configured. See README for setup instructions.</p>';
+        return;
       }
 
-      window.addEventListener('message', (event) => {
-        if (event.origin !== 'https://giscus.app') {
-          return;
-        }
+      container.innerHTML = '';
+
+      const hasDarkClass = document.documentElement.classList.contains('dark');
+      const giscusTheme = hasDarkClass ? 'dark' : 'light_high_contrast';
+
+      const giscusAttributes = {
+        src: 'https://giscus.app/client.js',
+        'data-repo': giscusRepo || '',
+        'data-repo-id': giscusRepoId,
+        'data-category': giscusCategory || 'Comments',
+        'data-category-id': giscusCategoryId,
+        'data-mapping': 'pathname',
+        'data-strict': '0',
+        'data-reactions-enabled': '1',
+        'data-emit-metadata': '0',
+        'data-input-position': 'top',
+        'data-theme': giscusTheme,
+        'data-lang': 'en',
+        'data-loading': 'lazy',
+        crossorigin: 'anonymous',
+        async: '',
+      };
+
+      const giscusScript = document.createElement('script');
+      Object.entries(giscusAttributes).forEach(([key, value]) => {
+        giscusScript.setAttribute(key, value);
       });
 
+      container.appendChild(giscusScript);
     }
 
     const updateGiscusTheme = new MutationObserver(() => {
-      const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
-      if (iframe?.contentWindow) {
-        const theme = document.documentElement.classList.contains('dark')
-          ? 'dark'
-          : 'light_high_contrast';
-        iframe.contentWindow.postMessage(
-          { giscus: { setConfig: { theme } } },
-          'https://giscus.app'
-        );
-      }
+      loadGiscus();
     });
 
     updateGiscusTheme.observe(document.documentElement, {

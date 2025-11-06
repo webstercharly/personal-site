@@ -1,24 +1,4 @@
 ---
-/**
- * CodeComparison Component
- *
- * Side-by-side code comparison for before/after examples
- *
- * Usage:
- * <CodeComparison>
- *   <Fragment slot="before">
- *     ```javascript
- *     const oldCode = 'here';
- *     ```
- *   </Fragment>
- *   <Fragment slot="after">
- *     ```javascript
- *     const newCode = 'here';
- *     ```
- *   </Fragment>
- * </CodeComparison>
- */
-
 interface Props {
   title?: string;
   beforeLabel?: string;
@@ -39,7 +19,8 @@ const layoutClass =
     : 'flex flex-col gap-4';
 ---
 
-<div class="code-comparison my-8 p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+<div class="code-comparison my-8">
+  <div class="code-comparison-inner p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
   {title && (
     <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">
       {title}
@@ -47,7 +28,6 @@ const layoutClass =
   )}
 
   <div class={layoutClass}>
-    <!-- Before Section -->
     <div class="comparison-section before flex flex-col">
       <div class="flex items-center gap-2 mb-3">
         <span class="text-red-600 dark:text-red-400 text-xl" aria-hidden="true">❌</span>
@@ -60,7 +40,6 @@ const layoutClass =
       </div>
     </div>
 
-    <!-- After Section -->
     <div class="comparison-section after flex flex-col">
       <div class="flex items-center gap-2 mb-3">
         <span class="text-green-600 dark:text-green-400 text-xl" aria-hidden="true">✅</span>
@@ -73,11 +52,26 @@ const layoutClass =
       </div>
     </div>
   </div>
+  </div>
 </div>
 
 <style>
   .code-comparison {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .code-comparison-inner {
     animation: fadeIn 0.5s ease-out;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .code-comparison h3 {
@@ -128,7 +122,6 @@ const layoutClass =
     font-size: 0.875rem;
   }
 
-  /* Hover effects */
   .comparison-section.before:hover .comparison-content {
     border-left-color: rgb(220 38 38);
   }

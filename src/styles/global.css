@@ -2,10 +2,11 @@
 @import '@fontsource-variable/inter/wght.css';
 @import '@fontsource-variable/jetbrains-mono/wght.css';
 
-/* Tailwind directives */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind (v4 single import replaces the base/components/utilities directives) */
+@import 'tailwindcss';
+
+/* Class-based dark mode, matching the previous darkMode: 'class' config */
+@custom-variant dark (&:where(.dark, .dark *));
 
 *,
 *::before,
@@ -343,7 +344,7 @@ a:focus-visible {
 }
 
 /* Code block styling - works with Shiki dual theme */
-.prose :global(pre.astro-code) {
+.prose pre.astro-code {
   @apply rounded-xl shadow-lg border;
   border-color: var(--color-border) !important;
   padding: 1.5rem !important;
@@ -354,11 +355,11 @@ a:focus-visible {
   background-color: #f6f8fa !important;
 }
 
-.dark .prose :global(pre.astro-code) {
+.dark .prose pre.astro-code {
   background-color: #0d1117 !important;
 }
 
-.prose :global(pre code) {
+.prose pre code {
   @apply bg-transparent p-0;
   font-family: 'JetBrains Mono Variable', 'Courier New', monospace;
   font-size: 0.875rem;
@@ -366,7 +367,7 @@ a:focus-visible {
 }
 
 /* Inline code styling */
-.prose :global(code):not(:global(pre code)) {
+.prose code:not(pre code) {
   @apply px-2 py-1 rounded-md;
   background-color: #f6f8fa;
   color: #c93c37;
@@ -375,7 +376,7 @@ a:focus-visible {
   font-weight: 500;
 }
 
-.dark .prose :global(code):not(:global(pre code)) {
+.dark .prose code:not(pre code) {
   background-color: #161b22;
   color: #ff7b72;
 }

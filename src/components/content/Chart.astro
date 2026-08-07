@@ -19,7 +19,6 @@ const {
   data,
   unit = '',
   max,
-  height = 'md',
 } = Astro.props;
 
 const maxValue = max ?? Math.max(...data.map(d => d.value)) * 1.1;
@@ -37,12 +36,6 @@ const colors = {
   red: 'bg-red-500',
   yellow: 'bg-yellow-500',
   emerald: 'bg-emerald-500',
-};
-
-const heights = {
-  sm: 'h-8',
-  md: 'h-12',
-  lg: 'h-16',
 };
 ---
 

@@ -57,10 +57,10 @@ try {
             <h2 class="text-3xl font-bold mb-6 pb-3 text-gray-900 dark:text-white border-b-2" style="border-color: var(--color-border);">{year}</h2>
             <div class="space-y-6">
               {postsByYear[Number(year)]?.map((post) => {
-                const readingTime = Math.ceil(post.body.split(/\s+/).length / WORDS_PER_MINUTE);
+                const readingTime = Math.ceil((post.body ?? "").split(/\s+/).length / WORDS_PER_MINUTE);
                 return (
                 <article class="p-6 rounded-lg bg-gray-50 dark:bg-gray-800 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-                  <a href={`/blog/${post.slug}`} class="group">
+                  <a href={`/blog/${post.id}`} class="group">
                     <div class="flex items-center gap-3 text-sm mb-2" style="color: var(--color-text-muted);">
                       <time>
                         {post.data.pubDate.toLocaleDateString('en-US', {

@@ -132,10 +132,10 @@ try {
 
           <div class="grid gap-6">
             {recentPosts.map((post, index) => {
-              const readingTime = Math.ceil(post.body.split(/\s+/).length / WORDS_PER_MINUTE);
+              const readingTime = Math.ceil((post.body ?? "").split(/\s+/).length / WORDS_PER_MINUTE);
               return (
               <article class="p-6 rounded-lg bg-gray-50 dark:bg-gray-800 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] slide-in-right" style={`animation-delay: ${index * 0.1}s`}>
-                <a href={`/blog/${post.slug}`} class="group">
+                <a href={`/blog/${post.id}`} class="group">
                   <div class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400 mb-2">
                     <time>
                       {post.data.pubDate.toLocaleDateString('en-US', {

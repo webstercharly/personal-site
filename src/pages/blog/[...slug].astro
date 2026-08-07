@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import { WORDS_PER_MINUTE } from '../../lib/constants';
@@ -7,15 +7,16 @@ import { WORDS_PER_MINUTE } from '../../lib/constants';
 export async function getStaticPaths() {
   const blogEntries = await getCollection('blog');
   return blogEntries.map(entry => ({
-    params: { slug: entry.slug },
+    params: { slug: entry.id },
     props: { entry },
   }));
 }
 
 const { entry } = Astro.props;
-const { Content } = await entry.render();
+const { Content } = await render(entry);
 
-const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE);
+const wordCount = (entry.body ?? '').split(/\s+/).length;
+const readingTime = Math.ceil(wordCount / WORDS_PER_MINUTE);
 ---
 
 <BaseLayout
@@ -133,11 +134,11 @@ const readingTime = Math.ceil(entry.body.split(/\s+/).length / WORDS_PER_MINUTE)
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://charlywebster.com/blog/${entry.slug}`
+      "@id": `https://charlywebster.com/blog/${entry.id}`
     },
     "keywords": entry.data.tags.join(", "),
     "articleSection": "Engineering Leadership",
-    "wordCount": entry.body.split(/\s+/).length,
+    "wordCount": wordCount,
     "timeRequired": `PT${readingTime}M`
   })} />
 

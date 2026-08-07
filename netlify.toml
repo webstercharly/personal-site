@@ -13,7 +13,7 @@
 
 [build.environment]
   # Node version
-  NODE_VERSION = "18"
+  NODE_VERSION = "22"
 
   # Use npm for package management
   NPM_FLAGS = "--legacy-peer-deps"

@@ -1,0 +1,114 @@
+name: Lighthouse check
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lighthouse:
+    name: Lighthouse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Find changed, published post URLs
+        id: urls
+        run: |
+          # Same directory-pathspec approach as editorial-audit.yml — see
+          # that workflow for why a globstar pattern here would silently
+          # miss files. Drafts are skipped: they're excluded from the
+          # production build, so their URLs 404 against this preview server.
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'src/content/blog/' | grep -v '/_drafts/' || true)
+          ARGS=""
+          for f in $FILES; do
+            slug=$(basename "$f" | sed -E 's/\.(md|mdx)$//')
+            ARGS="$ARGS --collect.url=http://localhost:4321/blog/$slug/"
+          done
+          echo "extra_args=$ARGS" >> "$GITHUB_OUTPUT"
+
+      - name: Run Lighthouse CI
+        id: lhci
+        run: |
+          npx lhci autorun \
+            --collect.url=http://localhost:4321/ \
+            --collect.url=http://localhost:4321/blog/ \
+            ${{ steps.urls.outputs.extra_args }}
+        continue-on-error: true
+
+      - name: Build PR comment
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const marker = '<!-- lighthouse-report -->';
+            let body;
+
+            const manifestPath = '.lighthouseci/manifest.json';
+            if (!fs.existsSync(manifestPath)) {
+              body = `${marker}\n# Lighthouse check\n\nNo report was produced — the run likely failed before Lighthouse could collect results. Check the "Lighthouse" job log.`;
+            } else {
+              const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+              const rows = manifest.filter((e) => e.isRepresentativeRun);
+              const pct = (n) => Math.round(n * 100);
+              const lines = [
+                marker,
+                '# Lighthouse check',
+                '',
+                '| Page | Performance | Accessibility | Best Practices | SEO |',
+                '| --- | --- | --- | --- | --- |',
+              ];
+              for (const r of rows) {
+                const path = new URL(r.url).pathname;
+                const s = r.summary;
+                lines.push(`| ${path} | ${pct(s.performance)} | ${pct(s.accessibility)} | ${pct(s['best-practices'])} | ${pct(s.seo)} |`);
+              }
+              lines.push('');
+              lines.push('Accessibility, Best Practices, and SEO must score 90+ to pass. Performance is reported only — shared CI runners are too noisy for a single number to reliably gate on.');
+              if ('${{ steps.lhci.outcome }}' === 'failure') {
+                lines.push('', '**One or more gated categories scored below 90.**');
+              }
+              body = lines.join('\n');
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((c) => c.body.startsWith(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Fail if Lighthouse CI failed
+        if: steps.lhci.outcome == 'failure'
+        run: exit 1

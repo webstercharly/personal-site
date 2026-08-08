@@ -1,0 +1,28 @@
+name: Build check
+
+on:
+  pull_request:
+
+jobs:
+  production-build:
+    name: Production build
+    runs-on: ubuntu-latest
+    # Mirrors netlify.toml's [context.production.environment]. Deploy
+    # previews don't set NODE_ENV=production, so they can pass while the
+    # actual production deploy fails on the same code — this job exists to
+    # catch that gap before merge, not just re-run a generic build.
+    env:
+      NODE_ENV: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies (production context, no devDependencies)
+        run: npm ci --omit=dev
+
+      - name: Build
+        run: npm run build

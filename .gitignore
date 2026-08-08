@@ -81,3 +81,5 @@ Thumbs.db
 
 # Unused/unoptimized assets
 unused-assets/
+
+.lighthouseci/

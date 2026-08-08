@@ -16,21 +16,22 @@
     "audit:posts": "node scripts/editorial-audit.mjs --all"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.10",
     "@astrojs/markdown-satteri": "^0.3.5",
     "@astrojs/mdx": "^7.0.5",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
     "@fontsource-variable/inter": "^5.2.8",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
-    "astro": "^7.2.0",
-    "astro-expressive-code": "^0.44.1"
-  },
-  "devDependencies": {
-    "@astrojs/check": "^0.9.10",
     "@tailwindcss/vite": "^4.3.3",
-    "js-yaml": "^4.3.1",
-    "puppeteer": "^24.28.0",
+    "astro": "^7.2.0",
+    "astro-expressive-code": "^0.44.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+    "@lhci/cli": "^0.15.1",
+    "js-yaml": "^4.3.1",
+    "puppeteer": "^24.28.0"
   }
 }

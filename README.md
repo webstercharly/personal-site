@@ -75,12 +75,20 @@ To enable GitHub-integrated comments on blog posts:
 │   └── favicon.svg       # Site favicon
 ├── src/
 │   ├── components/       # Reusable components
+│   │   ├── content/          # Components for use in MDX posts
+│   │   ├── Icon.astro        # Icons addressed by name
+│   │   ├── icons.ts          # The icon name registry
 │   │   └── Navigation.astro
 │   ├── content/
-│   │   ├── blog/         # Blog posts (Markdown/MDX)
-│   │   └── config.ts     # Content collection schemas
+│   │   └── blog/         # Published posts (Markdown/MDX)
+│   │       └── _drafts/  # Drafts, left out of the build
+│   ├── content.config.ts # Content collection schema and loader
+│   ├── icons/            # Vendored Lucide SVGs (see its README)
 │   ├── layouts/
 │   │   └── BaseLayout.astro  # Base HTML layout
+│   ├── lib/
+│   │   ├── constants.ts
+│   │   └── posts.ts          # getPosts() / isDraft()
 │   ├── pages/
 │   │   ├── index.astro       # Homepage
 │   │   ├── blog/
@@ -105,10 +113,34 @@ description: 'A brief description of your post'
 pubDate: 2025-11-01
 author: 'Charly Webster'
 tags: ['tag1', 'tag2']
-draft: false  # Set to true to hide from production
 ---
 
 Your content goes here...
+```
+
+### Drafts
+
+A post's directory decides whether it is published — there is no `draft`
+frontmatter flag:
+
+| Location | Live site | `npm run dev` |
+| --- | --- | --- |
+| `src/content/blog/` | Published | Shown |
+| `src/content/blog/_drafts/` | Excluded entirely | Shown, with a "Draft preview" banner |
+
+Drafts are dropped by the content loader itself, so a draft cannot reach a
+public URL, the sitemap, the RSS feed, or any index page. Draft pages also
+carry `noindex, nofollow` while you preview them.
+
+A draft previews at the URL it will have once it is live — `_drafts/` never
+appears in the path. **To publish, move the file up one directory** into
+`src/content/blog/`. Nothing else changes, and the URL stays the same.
+
+In `.mdx` posts, import components through the `@components/*` alias rather
+than a relative path, so imports keep working when the file moves:
+
+```mdx
+import Callout from '@components/content/Callout.astro';
 ```
 
 ## Available Scripts

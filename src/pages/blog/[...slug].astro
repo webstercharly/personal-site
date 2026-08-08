@@ -1,12 +1,13 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import { WORDS_PER_MINUTE } from '../../lib/constants';
+import { getPosts, isDraft } from '../../lib/posts';
 
 export async function getStaticPaths() {
-  const blogEntries = await getCollection('blog');
-  return blogEntries.map(entry => ({
+  const posts = await getPosts();
+  return posts.map(entry => ({
     params: { slug: entry.id },
     props: { entry },
   }));
@@ -14,6 +15,9 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+
+// Only ever true on the dev server; the loader drops drafts from a build.
+const draft = isDraft(entry);
 
 const wordCount = (entry.body ?? '').split(/\s+/).length;
 const readingTime = Math.ceil(wordCount / WORDS_PER_MINUTE);
@@ -25,12 +29,19 @@ const readingTime = Math.ceil(wordCount / WORDS_PER_MINUTE);
   type="article"
   publishedTime={entry.data.pubDate.toISOString()}
   tags={entry.data.tags}
+  noindex={draft}
 >
   <Navigation />
 
   <main id="main-content" class="container pb-12">
     <article class="max-w-3xl mx-auto">
       <header class="pt-20 mb-16">
+        {draft && (
+          <p class="mb-8 px-4 py-3 rounded-lg font-semibold bg-yellow-100 text-yellow-900 dark:bg-yellow-950 dark:text-yellow-100">
+            Draft preview &mdash; this post is in <code>_drafts/</code> and is left out of the build.
+          </p>
+        )}
+
         <div class="mb-8">
           <a
             href="/blog"

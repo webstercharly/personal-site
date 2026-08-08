@@ -1,9 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Navigation from '../components/Navigation.astro';
-import { getCollection } from 'astro:content';
-import type { CollectionEntry } from 'astro:content';
 import { RECENT_POSTS_COUNT, WORDS_PER_MINUTE } from '../lib/constants';
+import { getPosts, type Post } from '../lib/posts';
 import { Image } from 'astro:assets';
 
 import authorImg from '../../public/images/author.jpg';
@@ -12,14 +11,10 @@ import linkedinIcon from '../../public/images/linkedin.png';
 import mediumIcon from '../../public/images/medium.png';
 import twitterIcon from '../../public/images/twitter.png';
 
-let recentPosts: CollectionEntry<'blog'>[] = [];
+let recentPosts: Post[] = [];
 
 try {
-  const allPosts = await getCollection('blog');
-  recentPosts = allPosts
-    .filter(post => !post.data.draft)
-    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-    .slice(0, RECENT_POSTS_COUNT);
+  recentPosts = (await getPosts()).slice(0, RECENT_POSTS_COUNT);
 } catch (error) {
   console.error('Failed to load blog posts:', error);
 }

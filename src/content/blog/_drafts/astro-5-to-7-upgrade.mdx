@@ -17,7 +17,7 @@ This site used Astro 5. It uses Astro 7 now. This post shows what I changed. It 
 I wrote this post in Simplified Technical English (ASD-STE100). This is a controlled language for technical documents. It uses a small set of approved words and short sentences.
 
 <Callout type="info" title="Summary">
-I moved this site through two major versions in one step. The largest changes were the content collections API, Tailwind CSS 4, and a new Markdown processor. The site has one less dependency than before.
+I moved this site through two major versions in one step. The largest changes were the content collections API, Tailwind CSS 4, and a new Markdown processor. One change removed all the space on the site, and the build showed no error.
 </Callout>
 
 ## Why I did this work
@@ -117,6 +117,40 @@ Two lines replace the old configuration:
 
 The first line replaces the three `@tailwind` lines. The second line keeps the dark mode that uses a class. Without the second line, all the `dark:` classes stop.
 
+### A problem with CSS layers
+
+This change caused the worst problem of the upgrade.
+
+Tailwind CSS 4 puts its utilities in a CSS layer. CSS that is not in a layer wins against CSS in a layer. Specificity does not change this result.
+
+My CSS had this reset, and it was not in a layer:
+
+```css
+* {
+  margin: 0;
+  padding: 0;
+}
+```
+
+Thus the reset won against each space utility on the site. The values of `p-4`, `p-6`, `my-6`, and `px-3` all became `0px`.
+
+Tailwind CSS 3 did not use layers. Thus `.p-4` won against `*`, because a class has more specificity than `*`. The same reset was safe.
+
+Put your reset in the `base` layer:
+
+```css
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+  }
+}
+```
+
+<Callout type="danger" title="A build with no errors can hide a problem">
+The build showed no errors. The type check showed no errors. But every page lost its space. I found this only when I looked at a page in a browser and measured an element.
+</Callout>
+
 ## The new Markdown processor
 
 Astro 7 has a new Markdown processor. Its name is Sätteri. It replaces remark and rehype.
@@ -181,6 +215,31 @@ I added a hidden label to each callout. The label says `Warning:`, `Tip:`, or `D
 Hide an icon from a screen reader only if the text near it gives the same information. If the icon gives the information alone, add a text label.
 </Callout>
 
+## Drafts
+
+A draft post must not go on the live site.
+
+My first method used a `draft` field in the frontmatter. Each page then removed the drafts from its list. This method has a problem. I removed the drafts in three places, but I forgot a fourth place. Thus a draft got a public URL and an entry in the sitemap.
+
+A directory is a better method. The loader does not read the `_drafts` directory during a build:
+
+```ts
+loader: glob({
+  pattern: import.meta.env.DEV
+    ? '**/*.{md,mdx}'
+    : ['**/*.{md,mdx}', '!_drafts/**'],
+  base: './src/content/blog',
+}),
+```
+
+Now a draft is not in the collection. Thus no page must remember to remove it. The dev server still reads the drafts, so you can look at a draft before you publish it.
+
+To publish a post, move the file up one directory. The URL does not change.
+
+<Callout type="tip" title="Remove the data at its source">
+If you filter the same data in more than one place, you will forget one of them. It is safer to remove the data at its source.
+</Callout>
+
 ## The sequence of the work
 
 <Timeline
@@ -224,6 +283,8 @@ Hide an icon from a screen reader only if the text near it gives the same inform
 - Look at the HTML that the build makes. A build with no errors is not enough.
 - Open the site in a browser. Some problems appear only there.
 - Count your dependencies. A framework can do the work of a library.
+- Learn how CSS layers change the cascade. A new version of a tool can change which rule wins.
+- Remove data at its source. Do not filter the same data on each page.
 
 ## The result
 
@@ -233,6 +294,6 @@ Hide an icon from a screen reader only if the text near it gives the same inform
   <Metric value="4 kB" label="Icons" trend="down" color="emerald" icon="zoom-in" description="Ten SVG files, and no icon library" />
 </MetricsGrid>
 
-The site is faster to build. It has fewer dependencies. And the code blocks are better than before.
+The site has two more dependencies than before. Expressive Code and the new Markdown package are the cause. But the icons need no library now, and each dependency still gets new versions.
 
-The work took one day. If I wait for Astro 8, the next upgrade will be more difficult.
+If I wait for Astro 8, the next upgrade will be more difficult.

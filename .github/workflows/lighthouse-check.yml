@@ -36,7 +36,7 @@ jobs:
           ARGS=""
           for f in $FILES; do
             slug=$(basename "$f" | sed -E 's/\.(md|mdx)$//')
-            ARGS="$ARGS --collect.url=http://localhost:4322/blog/$slug/"
+            ARGS="$ARGS --collect.url=http://localhost:4321/blog/$slug/"
           done
           echo "extra_args=$ARGS" >> "$GITHUB_OUTPUT"
 
@@ -44,8 +44,8 @@ jobs:
         id: lhci
         run: |
           npx lhci autorun \
-            --collect.url=http://localhost:4322/ \
-            --collect.url=http://localhost:4322/blog/ \
+            --collect.url=http://localhost:4321/ \
+            --collect.url=http://localhost:4321/blog/ \
             ${{ steps.urls.outputs.extra_args }}
         continue-on-error: true
 

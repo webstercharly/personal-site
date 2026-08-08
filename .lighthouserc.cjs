@@ -7,8 +7,12 @@
 module.exports = {
   ci: {
     collect: {
-      url: ['http://localhost:4322/', 'http://localhost:4322/blog/'],
-      startServerCommand: 'npm run preview',
+      url: ['http://localhost:4321/', 'http://localhost:4321/blog/'],
+      // Force the port explicitly rather than trusting Astro's default: if
+      // something else is already on 4321, Astro silently falls back to the
+      // next free port instead of failing, which would desync the server's
+      // real address from the URLs above with no error to catch it.
+      startServerCommand: 'npm run preview -- --port 4321',
       startServerReadyPattern: 'Preview server running',
       startServerReadyTimeout: 30000,
       numberOfRuns: 3,

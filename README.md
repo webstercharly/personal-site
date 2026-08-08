@@ -15,19 +15,19 @@ A modern personal website and blog built with Astro, featuring markdown-based bl
 
 ## Tech Stack
 
-- **Framework**: Astro 5.x
+- **Framework**: Astro 7.x
 - **Language**: TypeScript (strict mode)
-- **Styling**: Custom CSS with CSS variables for theming
+- **Styling**: Tailwind CSS 4, plus custom CSS variables for theming
 - **Content**: Markdown/MDX for blog posts
 - **Comments**: giscus (GitHub Discussions)
-- **Deployment**: Ready for Vercel, Netlify, or Cloudflare Pages
+- **Deployment**: Netlify, configured via `netlify.toml`
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18.20 or higher
-- npm or yarn
+- Node.js 22.12 or higher
+- npm
 
 ### Installation
 
@@ -97,6 +97,9 @@ To enable GitHub-integrated comments on blog posts:
 │   │   └── rss.xml.ts        # RSS feed
 │   └── styles/
 │       └── global.css        # Global styles and theme
+├── scripts/
+│   └── editorial-audit.mjs   # Deterministic blog post quality checks
+├── .github/workflows/    # PR checks (editorial audit, production build, Lighthouse)
 ├── astro.config.mjs      # Astro configuration
 ├── tsconfig.json         # TypeScript configuration
 └── package.json
@@ -146,9 +149,20 @@ import Callout from '@components/content/Callout.astro';
 ## Available Scripts
 
 - `npm run dev` - Start development server
-- `npm run build` - Build for production
+- `npm run build` - Type-check (`astro check`) and build for production
 - `npm run preview` - Preview production build locally
 - `npm run astro` - Run Astro CLI commands
+- `npm run audit:drafts` - Run deterministic quality checks against posts in `_drafts/`
+- `npm run audit:posts` - Run the same checks against every post, published or draft
+- `npm run screenshots` - Capture light/dark screenshots of key pages with Puppeteer (needs `npm run dev` running first)
+
+## Quality checks on pull requests
+
+Three GitHub Actions run automatically:
+
+- **Editorial audit** (`.github/workflows/editorial-audit.yml`) - on PRs touching `src/content/blog/**`, checks changed posts for frontmatter, word counts, broken links, and readability, then adds a qualitative Claude Code review. Posts both as PR comments. Requires a `CLAUDE_CODE_OAUTH_TOKEN` repo secret.
+- **Build check** (`.github/workflows/build-check.yml`) - on every PR, installs and builds under the same production-only conditions Netlify uses, so a build that would fail on deploy fails here first.
+- **Lighthouse check** (`.github/workflows/lighthouse-check.yml`) - on every PR, runs Lighthouse against the homepage, blog index, and any changed post. Gates on Accessibility/Best Practices/SEO scoring 90+; Performance is reported, not gated.
 
 ## Customization
 
@@ -180,25 +194,11 @@ Edit social links in `src/pages/index.astro`
 
 ## Deployment
 
-### Vercel
-
-1. Push to GitHub
-2. Import project in Vercel
-3. Deploy (zero configuration needed)
-
-### Netlify
-
-1. Push to GitHub
-2. Connect repository in Netlify
-3. Build command: `npm run build`
-4. Publish directory: `dist`
-
-### Cloudflare Pages
-
-1. Push to GitHub
-2. Create new Pages project
-3. Build command: `npm run build`
-4. Build output directory: `dist`
+This site deploys to Netlify, configured via `netlify.toml`: build command
+`npm run build`, publish directory `dist`, Node 22. Push to `master` and
+Netlify builds and deploys automatically; every PR also gets a preview
+deploy. See the "Quality checks on pull requests" section above for the
+build check that runs before a PR merges.
 
 ## Performance
 
@@ -209,7 +209,14 @@ This site is optimized for performance:
 - Optimized asset loading
 - SEO-friendly markup
 
-Expected Lighthouse scores: 95+ across all metrics
+Measured locally against a production build (`npm run build && npm run preview`), Performance/Accessibility/Best Practices/SEO:
+
+| Page | Performance | Accessibility | Best Practices | SEO |
+| --- | --- | --- | --- | --- |
+| Homepage | 100 | 100 | 96 | 100 |
+| Blog post | 100 | 96 | 100 | 100 |
+
+`netlify.toml` also runs `@netlify/plugin-lighthouse` on every Netlify deploy for the canonical, hosted-environment numbers.
 
 ## License
 
@@ -219,4 +226,3 @@ MIT License - feel free to use this as a template for your own site!
 
 - Website: [charlywebster.com](https://charlywebster.com)
 - LinkedIn: [charlywebster](https://www.linkedin.com/in/charlywebster)
-- Email: charly.webster92@gmail.com

@@ -1,4 +1,6 @@
 ---
+import { SITE_NAME } from '@lib/constants';
+
 const currentPath = Astro.url.pathname;
 ---
 
@@ -9,7 +11,7 @@ const currentPath = Astro.url.pathname;
 <nav class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
   <div class="container">
     <div class="flex items-center justify-between h-16">
-      <a href="/" class="text-xl font-bold text-gray-900 dark:text-white transition-colors" style="color: var(--color-text);" onmouseenter="this.style.color = 'var(--color-accent)'" onmouseleave="this.style.color = 'var(--color-text)'">
+      <a href="/" aria-label={SITE_NAME} class="text-xl font-bold text-gray-900 dark:text-white transition-colors" style="color: var(--color-text);" onmouseenter="this.style.color = 'var(--color-accent)'" onmouseleave="this.style.color = 'var(--color-text)'">
       </a>
 
       <div class="flex items-center gap-6">

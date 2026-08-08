@@ -1,0 +1,122 @@
+---
+import CircleCheck from '../../icons/circle-check.svg';
+import CircleX from '../../icons/circle-x.svg';
+
+interface Props {
+  title?: string;
+  beforeLabel?: string;
+  afterLabel?: string;
+  layout?: 'horizontal' | 'vertical';
+}
+
+const {
+  title,
+  beforeLabel = 'Before',
+  afterLabel = 'After',
+  layout = 'horizontal',
+} = Astro.props;
+
+const layoutClass =
+  layout === 'horizontal'
+    ? 'grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch'
+    : 'flex flex-col gap-4';
+---
+
+<div class="code-comparison my-8 -mx-4 md:-mx-12 lg:-mx-24">
+  <div class="code-comparison-inner p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+  {title && (
+    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+      {title}
+    </h3>
+  )}
+
+  <div class={layoutClass}>
+    <div class="comparison-section before flex flex-col">
+      <div class="flex items-center gap-2 mb-3">
+        <CircleX class="w-5 h-5 text-red-600 dark:text-red-400" aria-hidden="true" />
+        <h4 class="text-sm font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
+          {beforeLabel}
+        </h4>
+      </div>
+      <div class="comparison-content border-l-4 border-red-500 pl-4 flex-1">
+        <slot name="before" />
+      </div>
+    </div>
+
+    <div class="comparison-section after flex flex-col">
+      <div class="flex items-center gap-2 mb-3">
+        <CircleCheck class="w-5 h-5 text-green-600 dark:text-green-400" aria-hidden="true" />
+        <h4 class="text-sm font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide">
+          {afterLabel}
+        </h4>
+      </div>
+      <div class="comparison-content border-l-4 border-green-500 pl-4 flex-1">
+        <slot name="after" />
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<style>
+  .code-comparison-inner {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .code-comparison h3 {
+    margin-top: 0 !important;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .comparison-section {
+    animation: slideIn 0.6s ease-out;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-width: 0;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .comparison-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .comparison-content :global(pre) {
+    margin: 0;
+    border-radius: 0.5rem;
+    flex: 1;
+  }
+
+  .comparison-content :global(code) {
+    font-size: 0.875rem;
+  }
+
+  .comparison-section.before:hover .comparison-content {
+    border-left-color: rgb(220 38 38);
+  }
+
+  .comparison-section.after:hover .comparison-content {
+    border-left-color: rgb(34 197 94);
+  }
+</style>

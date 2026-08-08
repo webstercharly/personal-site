@@ -1,0 +1,108 @@
+name: Editorial audit
+
+on:
+  pull_request:
+    paths:
+      - 'src/content/blog/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  deterministic-audit:
+    name: Deterministic checks
+    runs-on: ubuntu-latest
+    outputs:
+      changed_files: ${{ steps.changed.outputs.files }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Find changed post files
+        id: changed
+        run: |
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'src/content/blog/' | tr '\n' ',')
+          echo "files=$FILES" >> "$GITHUB_OUTPUT"
+
+      - name: Run editorial audit
+        if: steps.changed.outputs.files != ''
+        run: |
+          node scripts/editorial-audit.mjs --files "${{ steps.changed.outputs.files }}" --output audit-report.md --strict
+
+      - name: Publish report to job summary
+        if: always() && steps.changed.outputs.files != ''
+        run: cat audit-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment report on PR
+        if: always() && steps.changed.outputs.files != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('audit-report.md', 'utf-8');
+            const marker = '<!-- editorial-audit-report -->';
+            const body = `${marker}\n${report}`;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((c) => c.body.startsWith(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+  editorial-review:
+    name: Qualitative review (Claude)
+    needs: deterministic-audit
+    if: needs.deterministic-audit.outputs.changed_files != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Act as an editor reviewing a personal engineering blog post before
+            it leaves draft status. The changed post files in this PR are:
+            ${{ needs.deterministic-audit.outputs.changed_files }}
+
+            A deterministic checker already ran (word counts, broken links,
+            frontmatter, readability scores, passive voice, placeholders) —
+            see the "Deterministic checks" job summary and PR comment for
+            that report; don't repeat it. Focus on what only a reader can
+            judge: does the opening earn attention, is the argument's through
+            line clear, is there a genuine insight or is it restating
+            common knowledge, is the tone consistent with the rest of the
+            blog, and are there claims that read as unsupported or vague.
+
+            Post your review as a single PR comment. Be specific — quote the
+            passage you mean. If the post reads fine, say so briefly; don't
+            invent nitpicks to fill space.

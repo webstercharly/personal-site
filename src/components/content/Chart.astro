@@ -1,0 +1,134 @@
+---
+interface ChartData {
+  label: string;
+  value: number;
+  color?: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'yellow' | 'emerald';
+  description?: string;
+}
+
+interface Props {
+  title?: string;
+  data: ChartData[];
+  unit?: string;
+  max?: number;
+  height?: 'sm' | 'md' | 'lg';
+}
+
+const {
+  title,
+  data,
+  unit = '',
+  max,
+} = Astro.props;
+
+const maxValue = max ?? Math.max(...data.map(d => d.value)) * 1.1;
+
+const dataWithPercentages: (ChartData & { percentage: number })[] = data.map(item => ({
+  ...item,
+  percentage: (item.value / maxValue) * 100,
+}));
+
+const colors = {
+  blue: 'bg-blue-500',
+  green: 'bg-green-500',
+  purple: 'bg-purple-500',
+  orange: 'bg-orange-500',
+  red: 'bg-red-500',
+  yellow: 'bg-yellow-500',
+  emerald: 'bg-emerald-500',
+};
+---
+
+<div class="chart-component my-6 p-4 rounded-lg shadow-sm" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+  {title && (
+    <h3 class="text-lg font-bold mb-4 mt-0" style="color: var(--color-text);">
+      {title}
+    </h3>
+  )}
+
+  <div class="space-y-3">
+    {dataWithPercentages.map((item) => (
+      <div class="chart-bar-wrapper group">
+        <div class="flex justify-between items-baseline mb-2">
+          <span class="text-sm font-semibold" style="color: var(--color-text);">
+            {item.label}
+          </span>
+          <span class="text-lg font-bold" style="color: var(--color-accent);">
+            {item.value}{unit}
+          </span>
+        </div>
+
+        <div class="relative">
+          <div class="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div
+              class={`${colors[item.color || 'emerald']} h-full rounded-full transition-all duration-1000 ease-out`}
+              style={`width: ${item.percentage}%`}
+              role="progressbar"
+              aria-valuenow={item.value}
+              aria-valuemin={0}
+              aria-valuemax={maxValue}
+              aria-label={`${item.label}: ${item.value}${unit}`}
+            >
+            </div>
+          </div>
+        </div>
+
+        {item.description && (
+          <p class="mt-2 text-xs" style="color: var(--color-text-muted);">
+            {item.description}
+          </p>
+        )}
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .chart-component {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .chart-component h3 {
+    margin-top: 0 !important;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .chart-bar-wrapper {
+    animation: slideIn 0.6s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .chart-bar-wrapper > div > div > div {
+    animation: expandBar 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes expandBar {
+    from {
+      width: 0 !important;
+    }
+  }
+
+  .chart-bar-wrapper:hover > div > div > div {
+    filter: brightness(1.1);
+  }
+</style>

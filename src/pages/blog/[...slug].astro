@@ -1,0 +1,216 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import { WORDS_PER_MINUTE } from '../../lib/constants';
+import { getPosts, isDraft } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map(entry => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+// Only ever true on the dev server; the loader drops drafts from a build.
+const draft = isDraft(entry);
+
+const wordCount = (entry.body ?? '').split(/\s+/).length;
+const readingTime = Math.ceil(wordCount / WORDS_PER_MINUTE);
+---
+
+<BaseLayout
+  title={`${entry.data.title} - Charly Webster`}
+  description={entry.data.description}
+  type="article"
+  publishedTime={entry.data.pubDate.toISOString()}
+  tags={entry.data.tags}
+  noindex={draft}
+>
+  <Navigation />
+
+  <main id="main-content" class="container pb-12">
+    <article class="max-w-3xl mx-auto">
+      <header class="pt-20 mb-16">
+        {draft && (
+          <p class="mb-8 px-4 py-3 rounded-lg font-semibold bg-yellow-100 text-yellow-900 dark:bg-yellow-950 dark:text-yellow-100">
+            Draft preview &mdash; this post is in <code>_drafts/</code> and is left out of the build.
+          </p>
+        )}
+
+        <div class="mb-8">
+          <a
+            href="/blog"
+            class="inline-flex items-center hover:underline transition-colors"
+            style="color: var(--color-accent);"
+          >
+            ← Back to Blog
+          </a>
+        </div>
+
+        <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+          {entry.data.title}
+        </h1>
+
+        <div class="flex flex-wrap items-center gap-4 mb-6" style="color: var(--color-text-muted);">
+          <time>
+            {entry.data.pubDate.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </time>
+          <span>•</span>
+          <span>{readingTime} min read</span>
+          <span>•</span>
+          <span>By {entry.data.author}</span>
+        </div>
+
+        {entry.data.updatedDate && (
+          <p class="text-sm italic" style="color: var(--color-text-muted);">
+            Updated: {entry.data.updatedDate.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </p>
+        )}
+
+        {entry.data.tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mt-6">
+            {entry.data.tags.map((tag) => (
+              <span class="px-3 py-1 text-sm font-medium rounded-full transition-all duration-200 hover:scale-110" style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to)); color: white; opacity: 0.9;">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </header>
+
+      <div class="prose prose-lg dark:prose-invert max-w-none mb-12">
+        <Content />
+      </div>
+
+      <div class="border-t border-b py-8 my-12" style="border-color: var(--color-border);">
+        <div class="flex items-start gap-4">
+          <img
+            src="/images/author.jpg"
+            alt="Charly Webster"
+            loading="lazy"
+            decoding="async"
+            class="w-16 h-16 rounded-full object-cover"
+          />
+          <div>
+            <h3 class="text-lg font-bold mb-2">About {entry.data.author}</h3>
+            <p class="text-gray-700 dark:text-gray-300">
+              Head of Software Engineering with a passion for building high-performing teams
+              and scalable systems. Follow me on
+              <a href="https://www.linkedin.com/in/charlywebster" target="_blank" rel="noopener noreferrer" class="hover:underline transition-colors" style="color: var(--color-accent);"> LinkedIn</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-16 -mx-4 md:-mx-12 lg:-mx-24">
+        <div class="px-6 py-8">
+          <h2 class="text-2xl font-bold mb-6" style="color: var(--color-text);">Comments</h2>
+          <div id="giscus-container" class="giscus"></div>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": entry.data.title,
+    "description": entry.data.description,
+    "datePublished": entry.data.pubDate.toISOString(),
+    "dateModified": entry.data.updatedDate?.toISOString() || entry.data.pubDate.toISOString(),
+    "author": {
+      "@type": "Person",
+      "name": entry.data.author,
+      "url": "https://charlywebster.com"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "Charly Webster",
+      "url": "https://charlywebster.com"
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://charlywebster.com/blog/${entry.id}`
+    },
+    "keywords": entry.data.tags.join(", "),
+    "articleSection": "Engineering Leadership",
+    "wordCount": wordCount,
+    "timeRequired": `PT${readingTime}M`
+  })} />
+
+  <script is:inline define:vars={{
+    giscusRepo: import.meta.env.PUBLIC_GISCUS_REPO,
+    giscusRepoId: import.meta.env.PUBLIC_GISCUS_REPO_ID,
+    giscusCategory: import.meta.env.PUBLIC_GISCUS_CATEGORY,
+    giscusCategoryId: import.meta.env.PUBLIC_GISCUS_CATEGORY_ID
+  }}>
+    function loadGiscus() {
+      const container = document.getElementById('giscus-container');
+      if (!container) return;
+
+      if (!giscusRepoId || !giscusCategoryId) {
+        console.warn('Giscus not fully configured. Set PUBLIC_GISCUS_REPO_ID and PUBLIC_GISCUS_CATEGORY_ID in .env');
+        container.innerHTML = '<p class="text-gray-600 dark:text-gray-400 italic">Comments will be available once giscus is configured. See README for setup instructions.</p>';
+        return;
+      }
+
+      container.innerHTML = '';
+
+      const hasDarkClass = document.documentElement.classList.contains('dark');
+      const giscusTheme = hasDarkClass ? 'dark' : 'light_high_contrast';
+
+      const giscusAttributes = {
+        src: 'https://giscus.app/client.js',
+        'data-repo': giscusRepo || '',
+        'data-repo-id': giscusRepoId,
+        'data-category': giscusCategory || 'Comments',
+        'data-category-id': giscusCategoryId,
+        'data-mapping': 'pathname',
+        'data-strict': '0',
+        'data-reactions-enabled': '1',
+        'data-emit-metadata': '0',
+        'data-input-position': 'top',
+        'data-theme': giscusTheme,
+        'data-lang': 'en',
+        'data-loading': 'lazy',
+        crossorigin: 'anonymous',
+        async: '',
+      };
+
+      const giscusScript = document.createElement('script');
+      Object.entries(giscusAttributes).forEach(([key, value]) => {
+        giscusScript.setAttribute(key, value);
+      });
+
+      container.appendChild(giscusScript);
+    }
+
+    const updateGiscusTheme = new MutationObserver(() => {
+      loadGiscus();
+    });
+
+    updateGiscusTheme.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadGiscus);
+    } else {
+      loadGiscus();
+    }
+  </script>
+</BaseLayout>

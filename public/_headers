@@ -1,0 +1,41 @@
+## Security Headers for Netlify
+
+# Apply to all routes
+/*
+  # Prevent clickjacking attacks
+  X-Frame-Options: SAMEORIGIN
+
+  # Prevent MIME type sniffing
+  X-Content-Type-Options: nosniff
+
+  # Control referrer information
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # Control browser features and APIs
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=(), magnetometer=(), gyroscope=()
+
+  # Enable XSS protection (for older browsers)
+  X-XSS-Protection: 1; mode=block
+
+# Cache static assets for 1 year
+/images/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache fonts for 1 year
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Don't cache HTML files
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# RSS feed - cache for 1 hour
+/rss.xml
+  Cache-Control: public, max-age=3600
+
+# Sitemap - cache for 1 day
+/sitemap*.xml
+  Cache-Control: public, max-age=86400

@@ -1,0 +1,73 @@
+---
+const currentPath = Astro.url.pathname;
+---
+
+<a href="#main-content" class="skip-link">
+  Skip to main content
+</a>
+
+<nav class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
+  <div class="container">
+    <div class="flex items-center justify-between h-16">
+      <a href="/" class="text-xl font-bold text-gray-900 dark:text-white transition-colors" style="color: var(--color-text);" onmouseenter="this.style.color = 'var(--color-accent)'" onmouseleave="this.style.color = 'var(--color-text)'">
+      </a>
+
+      <div class="flex items-center gap-6">
+        <a
+          href="/"
+          class="text-sm font-medium transition-colors"
+          style={currentPath === '/' ? 'color: var(--color-accent);' : 'color: var(--color-text-muted);'}
+          onmouseenter="if (this.getAttribute('data-active') !== 'true') this.style.color = 'var(--color-accent)'"
+          onmouseleave="if (this.getAttribute('data-active') !== 'true') this.style.color = 'var(--color-text-muted)'"
+          data-active={currentPath === '/' ? 'true' : 'false'}
+        >
+          Home
+        </a>
+        <a
+          href="/blog"
+          class="text-sm font-medium transition-colors"
+          style={currentPath.startsWith('/blog') ? 'color: var(--color-accent);' : 'color: var(--color-text-muted);'}
+          onmouseenter="if (this.getAttribute('data-active') !== 'true') this.style.color = 'var(--color-accent)'"
+          onmouseleave="if (this.getAttribute('data-active') !== 'true') this.style.color = 'var(--color-text-muted)'"
+          data-active={currentPath.startsWith('/blog') ? 'true' : 'false'}
+        >
+          Blog
+        </a>
+
+        <button
+          id="theme-toggle"
+          type="button"
+          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          aria-label="Toggle dark mode"
+        >
+          <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+          </svg>
+          <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const themeToggle = document.getElementById('theme-toggle');
+  const darkIcon = document.getElementById('theme-toggle-dark-icon');
+  const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+  if (document.documentElement.classList.contains('dark')) {
+    lightIcon?.classList.remove('hidden');
+  } else {
+    darkIcon?.classList.remove('hidden');
+  }
+
+  themeToggle?.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+    darkIcon?.classList.toggle('hidden');
+    lightIcon?.classList.toggle('hidden');
+    const isDark = document.documentElement.classList.contains('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  });
+</script>

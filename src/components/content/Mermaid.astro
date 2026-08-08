@@ -1,0 +1,210 @@
+---
+import TriangleAlert from '../../icons/triangle-alert.svg';
+
+interface Props {
+  diagram?: string;
+  caption?: string;
+  theme?: 'default' | 'dark' | 'neutral';
+}
+
+const { diagram, caption, theme = 'default' } = Astro.props;
+
+const diagramId = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
+
+const slotContent = diagram ? null : await Astro.slots.render('default');
+
+function decodeHtmlEntities(text: string): string {
+  const entities: Record<string, string> = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#39;': "'",
+  };
+  let decoded = text.replace(/&[^;]+;/g, (entity) => entities[entity] || entity);
+
+  // The markdown processor applies smart-punctuation typography to MDX
+  // content ("--" -> en dash, "---" -> em dash), including inside this
+  // diagram source. Undo it so Mermaid's hyphen-based arrow syntax
+  // (-->, -.->, --x, etc.) survives intact regardless of arrow style.
+  decoded = decoded.replace(/—/g, '---').replace(/–/g, '--');
+
+  return decoded;
+}
+
+let diagramContent = diagram || (slotContent ? slotContent.replace(/<[^>]*>/g, '').trim() : '');
+diagramContent = decodeHtmlEntities(diagramContent);
+---
+
+<figure class="mermaid-component my-8">
+  <div
+    id={diagramId}
+    class="mermaid-wrapper p-6 rounded-xl shadow-sm overflow-auto"
+    style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"
+    data-theme={theme}
+  >
+    <pre class="mermaid" style="background: transparent; text-align: center;" data-diagram-content={diagramContent} set:text={diagramContent}></pre>
+
+    <div class="mermaid-error hidden p-4 rounded-lg" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);">
+      <div class="flex items-start gap-3">
+        <TriangleAlert class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: rgb(239, 68, 68);" aria-hidden="true" />
+        <div class="flex-1">
+          <h4 class="text-sm font-semibold mb-2" style="color: var(--color-text);">
+            Diagram Failed to Render
+          </h4>
+          <p class="text-xs mb-3" style="color: var(--color-text-muted);">
+            The diagram could not be loaded. This may be due to invalid syntax or a network issue.
+          </p>
+          <details class="text-xs">
+            <summary class="cursor-pointer font-medium hover:underline mb-2" style="color: rgb(239, 68, 68);">
+              View diagram source
+            </summary>
+            <pre class="mt-2 p-3 rounded overflow-x-auto" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><code class="mermaid-source" style="color: var(--color-text);"></code></pre>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {caption && (
+    <figcaption class="mt-3 text-sm text-center italic" style="color: var(--color-text-muted);">
+      {caption}
+    </figcaption>
+  )}
+</figure>
+
+<script is:inline>
+  if (!window.mermaidLoaded) {
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.textContent = `
+      const showError = (element, error) => {
+        const container = element.closest('.mermaid-wrapper');
+        if (!container) return;
+
+        const errorDiv = container.querySelector('.mermaid-error');
+        const sourceCode = container.querySelector('.mermaid-source');
+        const mermaidDiv = container.querySelector('.mermaid');
+
+        if (errorDiv && sourceCode && mermaidDiv) {
+          mermaidDiv.style.display = 'none';
+          errorDiv.classList.remove('hidden');
+
+          const content = mermaidDiv.getAttribute('data-diagram-content') || mermaidDiv.textContent;
+          sourceCode.textContent = content.trim();
+
+          console.error('Mermaid diagram error:', error);
+        }
+      };
+
+      try {
+        const loadTimeout = setTimeout(() => {
+          throw new Error('Mermaid CDN timeout');
+        }, 10000);
+
+        import('https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs')
+          .then(module => {
+            clearTimeout(loadTimeout);
+            const mermaid = module.default;
+
+            mermaid.initialize({
+              startOnLoad: false,
+              theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+              securityLevel: 'loose',
+              fontFamily: 'Inter, system-ui, sans-serif',
+            });
+
+            const renderDiagrams = async () => {
+              const diagrams = document.querySelectorAll('.mermaid:not([data-processed])');
+
+              for (const diagram of diagrams) {
+                try {
+                  await mermaid.run({ nodes: [diagram] });
+                } catch (error) {
+                  showError(diagram, error);
+                }
+              }
+            };
+
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', renderDiagrams);
+            } else {
+              renderDiagrams();
+            }
+
+            window.addEventListener('theme-changed', () => {
+              const newTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'default';
+              mermaid.initialize({
+                startOnLoad: false,
+                theme: newTheme,
+                securityLevel: 'loose',
+                fontFamily: 'Inter, system-ui, sans-serif',
+              });
+
+              document.querySelectorAll('.mermaid').forEach((element) => {
+                const graphDefinition = element.getAttribute('data-diagram-content') || element.textContent;
+                element.removeAttribute('data-processed');
+                element.textContent = graphDefinition;
+
+                const container = element.closest('.mermaid-wrapper');
+                const errorDiv = container?.querySelector('.mermaid-error');
+                if (errorDiv) {
+                  errorDiv.classList.add('hidden');
+                  element.style.display = '';
+                }
+              });
+
+              renderDiagrams();
+            });
+          })
+          .catch(error => {
+            console.error('Failed to load Mermaid from CDN:', error);
+            document.querySelectorAll('.mermaid').forEach(diagram => {
+              showError(diagram, error);
+            });
+          });
+      } catch (error) {
+        console.error('Mermaid initialization error:', error);
+      }
+    `;
+    document.head.appendChild(script);
+    window.mermaidLoaded = true;
+  }
+</script>
+
+<style>
+  .mermaid-component {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .mermaid-wrapper {
+    transition: all 0.3s ease;
+  }
+
+  .mermaid-wrapper:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+
+  .mermaid-wrapper :global(.mermaid) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+  }
+
+  .mermaid-wrapper :global(svg) {
+    max-width: 100%;
+    height: auto;
+  }
+</style>

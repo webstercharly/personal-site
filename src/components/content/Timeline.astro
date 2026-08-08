@@ -1,0 +1,138 @@
+---
+import Icon from '../Icon.astro';
+import { isIconName } from '../icons';
+
+interface TimelineItem {
+  date: string;
+  title: string;
+  description?: string;
+  /** An emoji, or a name from src/components/icons.ts to render as inline SVG. */
+  icon?: string;
+  color?: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'emerald';
+  link?: string;
+}
+
+interface Props {
+  items: TimelineItem[];
+  title?: string;
+}
+
+const { items, title } = Astro.props;
+
+const colors = {
+  blue: 'bg-blue-500',
+  green: 'bg-green-500',
+  purple: 'bg-purple-500',
+  orange: 'bg-orange-500',
+  red: 'bg-red-500',
+  emerald: 'bg-emerald-500',
+};
+
+const borderColors = {
+  blue: 'border-blue-500',
+  green: 'border-green-500',
+  purple: 'border-purple-500',
+  orange: 'border-orange-500',
+  red: 'border-red-500',
+  emerald: 'border-emerald-500',
+};
+---
+
+<div class="timeline-component my-12">
+  {title && (
+    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-8">
+      {title}
+    </h3>
+  )}
+
+  <div class="relative">
+    <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-300 dark:bg-gray-600" aria-hidden="true"></div>
+
+    <div class="space-y-8">
+      {items.map((item, index) => (
+        <div
+          class="timeline-item relative pl-20"
+          style={`animation-delay: ${index * 0.1}s`}
+        >
+          <div class={`absolute left-0 w-16 h-16 rounded-full ${colors[item.color || 'blue']} flex items-center justify-center shadow-lg`}>
+            {item.icon ? (
+              isIconName(item.icon) ? (
+                <Icon name={item.icon} class="w-7 h-7 text-white" aria-hidden="true" />
+              ) : (
+                <span class="text-2xl" aria-hidden="true">{item.icon}</span>
+              )
+            ) : (
+              <span class="text-white text-xs font-bold text-center px-1">
+                {item.date}
+              </span>
+            )}
+          </div>
+
+          <div class={`bg-white dark:bg-gray-800 border-l-4 ${borderColors[item.color || 'blue']} border-gray-200 dark:border-gray-700 rounded-lg p-6 shadow-md hover:shadow-lg transition-all`}>
+            <div class="flex justify-between items-start mb-2">
+              <time class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                {item.date}
+              </time>
+            </div>
+
+            <h4 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              {item.link ? (
+                <a
+                  href={item.link}
+                  class="transition-colors"
+                  style="color: var(--color-text);"
+                  onmouseenter="this.style.color = 'var(--color-accent)'"
+                  onmouseleave="this.style.color = 'var(--color-text)'"
+                >
+                  {item.title}
+                </a>
+              ) : (
+                item.title
+              )}
+            </h4>
+
+            {item.description && (
+              <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                {item.description}
+              </p>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+  .timeline-component {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .timeline-item {
+    animation: slideInRight 0.6s ease-out backwards;
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .timeline-item:hover > div:last-child {
+    transform: translateX(5px);
+  }
+</style>

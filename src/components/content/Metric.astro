@@ -1,0 +1,95 @@
+---
+import Icon from '../Icon.astro';
+import { isIconName } from '../icons';
+import MoveRight from '../../icons/move-right.svg';
+import TrendingDown from '../../icons/trending-down.svg';
+import TrendingUp from '../../icons/trending-up.svg';
+
+interface Props {
+  value: string;
+  label: string;
+  description?: string;
+  trend?: 'up' | 'down' | 'neutral';
+  /** An emoji, or a name from src/components/icons.ts to render as inline SVG. */
+  icon?: string;
+  color?: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'emerald';
+}
+
+const {
+  value,
+  label,
+  description,
+  trend,
+  icon,
+  color = 'emerald',
+} = Astro.props;
+
+const colors = {
+  blue: 'from-blue-500 to-blue-600',
+  green: 'from-green-500 to-green-600',
+  purple: 'from-purple-500 to-purple-600',
+  orange: 'from-orange-500 to-orange-600',
+  red: 'from-red-500 to-red-600',
+  emerald: 'from-emerald-500 to-emerald-600',
+};
+
+const trendIcons = {
+  up: TrendingUp,
+  down: TrendingDown,
+  neutral: MoveRight,
+};
+
+const TrendIcon = trend ? trendIcons[trend] : undefined;
+---
+
+<div
+  class="metric-card p-6 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all"
+>
+  {icon && (
+    <div class="text-3xl mb-3" aria-hidden="true">
+      {isIconName(icon) ? <Icon name={icon} class="w-8 h-8" /> : icon}
+    </div>
+  )}
+
+  <div class={`text-4xl font-bold mb-2 bg-gradient-to-r ${colors[color]} bg-clip-text text-transparent`}>
+    {value}
+  </div>
+
+  <div class="flex items-center gap-2">
+    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+      {label}
+    </div>
+    {TrendIcon && (
+      <span class="inline-flex items-center" role="img" aria-label={`Trend: ${trend}`}>
+        <TrendIcon class="w-4 h-4" aria-hidden="true" />
+      </span>
+    )}
+  </div>
+
+  {description && (
+    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+      {description}
+    </p>
+  )}
+</div>
+
+<style>
+  .metric-card {
+    animation: fadeInUp 0.5s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .metric-card:hover {
+    transform: translateY(-2px);
+  }
+</style>

@@ -1,0 +1,80 @@
+# Netlify Configuration
+# https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[build]
+  # Build command
+  command = "npm run build"
+
+  # Output directory
+  publish = "dist"
+
+  # Function directory (if needed in future)
+  functions = "netlify/functions"
+
+[build.environment]
+  # Node version
+  NODE_VERSION = "22"
+
+  # Use npm for package management
+  NPM_FLAGS = "--legacy-peer-deps"
+
+# Production context settings
+[context.production]
+  command = "npm run build"
+
+[context.production.environment]
+  NODE_ENV = "production"
+
+# Deploy Preview context
+[context.deploy-preview]
+  command = "npm run build"
+
+# Branch deploy context
+[context.branch-deploy]
+  command = "npm run build"
+
+# Redirects and rewrites
+[[redirects]]
+  # Redirect /blog/post to /blog/post/ (trailing slash)
+  from = "/blog/*"
+  to = "/blog/:splat/"
+  status = 301
+  force = false
+
+[[redirects]]
+  # SPA fallback for 404 - serve custom 404 page
+  from = "/*"
+  to = "/404.html"
+  status = 404
+
+# Headers are defined in public/_headers file
+
+# Build optimizations
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+[build.processing.html]
+  pretty_urls = true
+
+[build.processing.images]
+  compress = true
+
+# Asset optimization
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+
+  # Optional: Run Lighthouse on every deploy
+  [plugins.inputs]
+    output_path = "lighthouse-report"
+
+# Form handling (if you add forms later)
+# [build.environment]
+#   NETLIFY_USE_YARN = "false"

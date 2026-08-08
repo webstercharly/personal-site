@@ -59,3 +59,25 @@ typings/
 
 # next.js build output
 .next
+
+# Astro build output
+dist/
+.astro/
+
+# Environment variables
+.env.local
+.env.production
+
+# Editor directories
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.old
+
+# Unused/unoptimized assets
+unused-assets/

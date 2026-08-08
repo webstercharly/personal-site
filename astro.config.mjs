@@ -14,6 +14,11 @@ export default defineConfig({
     expressiveCode({
       themes: ['github-light', 'github-dark'],
       themeCssSelector: (theme) => (theme.name === 'github-dark' ? '.dark' : ':root'),
+      // The site toggles dark mode via a `.dark` class, not OS-level
+      // prefers-color-scheme, so this generated media query is unused —
+      // and combined with the `:root` selector above it produces a
+      // self-contradictory selector that breaks EC's CSS minifier.
+      useDarkModeMediaQuery: false,
       defaultProps: {
         wrap: true,
       },

@@ -11,7 +11,9 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "screenshots": "node test/take-screenshots.mjs"
+    "screenshots": "node test/take-screenshots.mjs",
+    "audit:drafts": "node scripts/editorial-audit.mjs",
+    "audit:posts": "node scripts/editorial-audit.mjs --all"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.3.5",
@@ -26,6 +28,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@tailwindcss/vite": "^4.3.3",
+    "js-yaml": "^4.3.1",
     "puppeteer": "^24.28.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.7.2"

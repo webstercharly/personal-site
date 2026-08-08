@@ -97,7 +97,7 @@
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 1.5rem;
 }
 
 .prose {
@@ -153,6 +153,7 @@
 .prose ol {
   margin-bottom: 1.5em;
   padding-left: 1.5em;
+  list-style: disc;
 }
 
 .prose li {
@@ -251,19 +252,6 @@
   animation: fadeInUp 0.6s ease-out;
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.float {
-  animation: float 3s ease-in-out infinite;
-}
-
 @keyframes gradientShift {
   0%, 100% {
     background-position: 0% 50%;
@@ -293,33 +281,6 @@
   animation: slideInRight 0.5s ease-out;
 }
 
-@keyframes blob {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-  }
-  25% {
-    transform: translate(20px, -50px) scale(1.1);
-  }
-  50% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-  75% {
-    transform: translate(50px, 50px) scale(1.05);
-  }
-}
-
-.animate-blob {
-  animation: blob 20s ease-in-out infinite;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
 /* Accessibility: Respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -330,8 +291,6 @@
     transition-duration: 0.01ms !important;
   }
 
-  .float,
-  .animate-blob,
   .gradient-animate {
     animation: none !important;
   }

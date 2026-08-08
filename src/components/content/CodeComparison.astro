@@ -22,7 +22,7 @@ const layoutClass =
     : 'flex flex-col gap-4';
 ---
 
-<div class="code-comparison my-8">
+<div class="code-comparison my-8 -mx-4 md:-mx-12 lg:-mx-24">
   <div class="code-comparison-inner p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
   {title && (
     <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">
@@ -59,22 +59,8 @@ const layoutClass =
 </div>
 
 <style>
-  .code-comparison {
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
   .code-comparison-inner {
     animation: fadeIn 0.5s ease-out;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
   }
 
   .code-comparison h3 {
@@ -97,6 +83,7 @@ const layoutClass =
     display: flex;
     flex-direction: column;
     height: 100%;
+    min-width: 0;
   }
 
   @keyframes slideIn {

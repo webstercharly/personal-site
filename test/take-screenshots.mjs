@@ -7,7 +7,6 @@ const OUTPUT_DIR = './screenshots';
 
 const pages = [
   { name: 'home', path: '/' },
-  { name: 'home-retro', path: '/index-new' },
   { name: 'blog', path: '/blog' },
 ];
 
@@ -50,6 +49,13 @@ async function takeScreenshots() {
             value: theme,
           },
         ]);
+
+        // The site persists its resolved theme to localStorage and prefers
+        // that over prefers-color-scheme on load, so clear it here or the
+        // previous iteration's theme sticks regardless of emulation.
+        await page.evaluateOnNewDocument(() => {
+          window.localStorage.removeItem('theme');
+        });
 
         for (const pageConfig of pages) {
           const url = `${BASE_URL}${pageConfig.path}`;

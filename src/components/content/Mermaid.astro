@@ -23,9 +23,11 @@ function decodeHtmlEntities(text: string): string {
   };
   let decoded = text.replace(/&[^;]+;/g, (entity) => entities[entity] || entity);
 
-  decoded = decoded.replace(/—>/g, '-->');
-  decoded = decoded.replace(/—\.—>/g, '-.->');
-  decoded = decoded.replace(/-\.—>/g, '-.->');
+  // The markdown processor applies smart-punctuation typography to MDX
+  // content ("--" -> en dash, "---" -> em dash), including inside this
+  // diagram source. Undo it so Mermaid's hyphen-based arrow syntax
+  // (-->, -.->, --x, etc.) survives intact regardless of arrow style.
+  decoded = decoded.replace(/—/g, '---').replace(/–/g, '--');
 
   return decoded;
 }

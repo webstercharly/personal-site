@@ -30,7 +30,7 @@ jobs:
       - name: Find changed post files
         id: changed
         run: |
-          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'src/content/blog/**/*.md' 'src/content/blog/**/*.mdx' | tr '\n' ',')
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'src/content/blog/' | tr '\n' ',')
           echo "files=$FILES" >> "$GITHUB_OUTPUT"
 
       - name: Run editorial audit

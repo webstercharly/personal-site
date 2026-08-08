@@ -1,8 +1,12 @@
 ---
+import Icon from '../Icon.astro';
+import { isIconName } from '../icons';
+
 interface TimelineItem {
   date: string;
   title: string;
   description?: string;
+  /** An emoji, or a name from src/components/icons.ts to render as inline SVG. */
   icon?: string;
   color?: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'emerald';
   link?: string;
@@ -52,7 +56,11 @@ const borderColors = {
         >
           <div class={`absolute left-0 w-16 h-16 rounded-full ${colors[item.color || 'blue']} flex items-center justify-center shadow-lg`}>
             {item.icon ? (
-              <span class="text-2xl" aria-hidden="true">{item.icon}</span>
+              isIconName(item.icon) ? (
+                <Icon name={item.icon} class="w-7 h-7 text-white" aria-hidden="true" />
+              ) : (
+                <span class="text-2xl" aria-hidden="true">{item.icon}</span>
+              )
             ) : (
               <span class="text-white text-xs font-bold text-center px-1">
                 {item.date}

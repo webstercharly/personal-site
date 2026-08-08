@@ -1,4 +1,7 @@
 ---
+import CircleCheck from '../../icons/circle-check.svg';
+import CircleX from '../../icons/circle-x.svg';
+
 interface Props {
   title?: string;
   beforeLabel?: string;
@@ -30,7 +33,7 @@ const layoutClass =
   <div class={layoutClass}>
     <div class="comparison-section before flex flex-col">
       <div class="flex items-center gap-2 mb-3">
-        <span class="text-red-600 dark:text-red-400 text-xl" aria-hidden="true">❌</span>
+        <CircleX class="w-5 h-5 text-red-600 dark:text-red-400" aria-hidden="true" />
         <h4 class="text-sm font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
           {beforeLabel}
         </h4>
@@ -42,7 +45,7 @@ const layoutClass =
 
     <div class="comparison-section after flex flex-col">
       <div class="flex items-center gap-2 mb-3">
-        <span class="text-green-600 dark:text-green-400 text-xl" aria-hidden="true">✅</span>
+        <CircleCheck class="w-5 h-5 text-green-600 dark:text-green-400" aria-hidden="true" />
         <h4 class="text-sm font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide">
           {afterLabel}
         </h4>

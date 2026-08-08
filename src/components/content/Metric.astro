@@ -1,9 +1,16 @@
 ---
+import Icon from '../Icon.astro';
+import { isIconName } from '../icons';
+import MoveRight from '../../icons/move-right.svg';
+import TrendingDown from '../../icons/trending-down.svg';
+import TrendingUp from '../../icons/trending-up.svg';
+
 interface Props {
   value: string;
   label: string;
   description?: string;
   trend?: 'up' | 'down' | 'neutral';
+  /** An emoji, or a name from src/components/icons.ts to render as inline SVG. */
   icon?: string;
   color?: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'emerald';
 }
@@ -27,10 +34,12 @@ const colors = {
 };
 
 const trendIcons = {
-  up: '📈',
-  down: '📉',
-  neutral: '➡️',
+  up: TrendingUp,
+  down: TrendingDown,
+  neutral: MoveRight,
 };
+
+const TrendIcon = trend ? trendIcons[trend] : undefined;
 ---
 
 <div
@@ -38,7 +47,7 @@ const trendIcons = {
 >
   {icon && (
     <div class="text-3xl mb-3" aria-hidden="true">
-      {icon}
+      {isIconName(icon) ? <Icon name={icon} class="w-8 h-8" /> : icon}
     </div>
   )}
 
@@ -50,9 +59,9 @@ const trendIcons = {
     <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
       {label}
     </div>
-    {trend && (
-      <span class="text-sm" aria-label={`Trend: ${trend}`}>
-        {trendIcons[trend]}
+    {TrendIcon && (
+      <span class="inline-flex items-center" role="img" aria-label={`Trend: ${trend}`}>
+        <TrendIcon class="w-4 h-4" aria-hidden="true" />
       </span>
     )}
   </div>

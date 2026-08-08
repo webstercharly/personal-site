@@ -154,7 +154,8 @@ code {
   margin-bottom: 0.5em;
 }
 
-.prose pre {
+/* Excludes Expressive Code's own <pre>, which brings its own theming. */
+.prose pre:not(.expressive-code pre) {
   margin-bottom: 1.5em;
   padding: 1rem;
   border-radius: 0.5rem;
@@ -343,27 +344,10 @@ a:focus-visible {
   outline-offset: 4px;
 }
 
-/* Code block styling - works with Shiki dual theme */
-.prose pre.astro-code {
-  @apply rounded-xl shadow-lg border;
-  border-color: var(--color-border) !important;
-  padding: 1.5rem !important;
-  overflow-x: auto;
-  line-height: 1.7;
-  font-size: 0.875rem;
-  /* Override Shiki's inline background */
-  background-color: #f6f8fa !important;
-}
-
-.dark .prose pre.astro-code {
-  background-color: #0d1117 !important;
-}
-
-.prose pre code {
-  @apply bg-transparent p-0;
-  font-family: 'JetBrains Mono Variable', 'Courier New', monospace;
-  font-size: 0.875rem;
-  background: transparent !important;
+/* Fenced code blocks are owned by Expressive Code (see astro.config.mjs).
+   Give its figure the same vertical rhythm as other prose blocks. */
+.prose .expressive-code {
+  margin-block: 1.5em;
 }
 
 /* Inline code styling */

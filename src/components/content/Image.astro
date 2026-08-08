@@ -1,4 +1,6 @@
 ---
+import ZoomIn from '../../icons/zoom-in.svg';
+
 interface Props {
   src: string;
   alt: string;
@@ -49,8 +51,9 @@ const loadingStrategy = priority ? 'eager' : 'lazy';
 
     {zoomable && (
       <div class="zoom-overlay absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100">
-        <span class="text-white text-sm font-medium bg-black bg-opacity-50 px-3 py-1 rounded-full">
-          🔍 Click to zoom
+        <span class="inline-flex items-center gap-1.5 text-white text-sm font-medium bg-black bg-opacity-50 px-3 py-1 rounded-full">
+          <ZoomIn class="w-4 h-4" aria-hidden="true" />
+          Click to zoom
         </span>
       </div>
     )}

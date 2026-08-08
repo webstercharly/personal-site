@@ -1,4 +1,6 @@
 ---
+import TriangleAlert from '../../icons/triangle-alert.svg';
+
 interface Props {
   diagram?: string;
   caption?: string;
@@ -43,7 +45,7 @@ diagramContent = decodeHtmlEntities(diagramContent);
 
     <div class="mermaid-error hidden p-4 rounded-lg" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);">
       <div class="flex items-start gap-3">
-        <span class="text-xl flex-shrink-0" style="color: rgb(239, 68, 68);" aria-hidden="true">⚠️</span>
+        <TriangleAlert class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: rgb(239, 68, 68);" aria-hidden="true" />
         <div class="flex-1">
           <h4 class="text-sm font-semibold mb-2" style="color: var(--color-text);">
             Diagram Failed to Render

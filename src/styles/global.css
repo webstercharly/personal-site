@@ -26,10 +26,13 @@
   html {
     font-family: 'Inter Variable', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     scroll-behavior: smooth;
+    background: var(--color-bg);
   }
 
   body {
     line-height: 1.6;
+    background: var(--color-bg);
+    color: var(--color-text);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -66,31 +69,42 @@
   }
 }
 
-/* Theme variables - Emerald & Charcoal */
+/* Editorial theme: warm paper, dark ink, playful link accents. */
 :root {
-  --color-bg: #fafafa;
-  --color-text: #18181b;
-  --color-text-muted: #71717a;
-  --color-border: #e4e4e7;
-  --color-accent: #10b981;
-  --color-accent-hover: #059669;
-  --color-accent-secondary: #047857;
-  --color-card-bg: #ffffff;
-  --gradient-from: #10b981;
-  --gradient-to: #047857;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
+  --color-bg: #fffaf5;
+  --color-text: #24211f;
+  --color-text-muted: #68605b;
+  --color-text-soft: #756d68;
+  --color-border: #dcd2ca;
+  --color-surface: #f4ece5;
+  --color-card-bg: #fffdf9;
+  --color-accent: #137f48;
+  --color-accent-hover: #0d6337;
+  --color-accent-secondary: #0d6337;
+  --color-accent-green: #27b467;
+  --color-accent-pink: #e8548f;
+  --color-accent-yellow: #e6b93f;
+  --gradient-from: #27b467;
+  --gradient-to: #137f48;
 }
 
 .dark {
-  --color-bg: #18181b;
-  --color-text: #fafafa;
-  --color-text-muted: #a1a1aa;
-  --color-border: #3f3f46;
-  --color-accent: #34d399;
-  --color-accent-hover: #10b981;
-  --color-accent-secondary: #059669;
-  --color-card-bg: #27272a;
-  --gradient-from: #34d399;
-  --gradient-to: #10b981;
+  --color-bg: #211f1e;
+  --color-text: #fffaf5;
+  --color-text-muted: #c4bbb5;
+  --color-text-soft: #978e88;
+  --color-border: #48423f;
+  --color-surface: #312d2b;
+  --color-card-bg: #2b2826;
+  --color-accent: #54d88d;
+  --color-accent-hover: #75e5a5;
+  --color-accent-secondary: #54d88d;
+  --color-accent-green: #45d582;
+  --color-accent-pink: #fa72a8;
+  --color-accent-yellow: #f2ca5b;
+  --gradient-from: #45d582;
+  --gradient-to: #54d88d;
 }
 
 /* Utility classes */

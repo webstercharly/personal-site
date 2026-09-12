@@ -4,52 +4,24 @@ import { SITE_NAME } from '@lib/constants';
 const currentPath = Astro.url.pathname;
 ---
 
-<a href="#main-content" class="skip-link">
-  Skip to main content
-</a>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
-<nav class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
-  <div class="container">
-    <div class="flex items-center justify-between h-16">
-      <a href="/" aria-label={SITE_NAME} class="text-xl font-bold text-gray-900 dark:text-white transition-colors" style="color: var(--color-text);" onmouseenter="this.style.color = 'var(--color-accent)'" onmouseleave="this.style.color = 'var(--color-text)'">
-      </a>
+<nav class="site-nav" aria-label="Primary navigation">
+  <div class="nav-inner">
+    <a href="/" aria-label={`${SITE_NAME} home`} class="wordmark">CW<span aria-hidden="true">.</span></a>
 
-      <div class="flex items-center gap-6">
-        <a
-          href="/"
-          class="text-sm font-medium transition-colors"
-          style={currentPath === '/' ? 'color: var(--color-accent);' : 'color: var(--color-text-muted);'}
-          onmouseenter="if (this.getAttribute('data-active') !== 'true') this.style.color = 'var(--color-accent)'"
-          onmouseleave="if (this.getAttribute('data-active') !== 'true') this.style.color = 'var(--color-text-muted)'"
-          data-active={currentPath === '/' ? 'true' : 'false'}
-        >
-          Home
-        </a>
-        <a
-          href="/blog"
-          class="text-sm font-medium transition-colors"
-          style={currentPath.startsWith('/blog') ? 'color: var(--color-accent);' : 'color: var(--color-text-muted);'}
-          onmouseenter="if (this.getAttribute('data-active') !== 'true') this.style.color = 'var(--color-accent)'"
-          onmouseleave="if (this.getAttribute('data-active') !== 'true') this.style.color = 'var(--color-text-muted)'"
-          data-active={currentPath.startsWith('/blog') ? 'true' : 'false'}
-        >
-          Blog
-        </a>
+    <div class="nav-links">
+      <a href="/" aria-current={currentPath === '/' ? 'page' : undefined}>Home</a>
+      <a href="/blog" aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}>Writing</a>
 
-        <button
-          id="theme-toggle"
-          type="button"
-          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-          aria-label="Toggle dark mode"
-        >
-          <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-          </svg>
-          <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
-          </svg>
-        </button>
-      </div>
+      <button id="theme-toggle" type="button" aria-label="Switch colour theme" aria-pressed="false">
+        <svg id="theme-toggle-dark-icon" class="hidden" aria-hidden="true" viewBox="0 0 20 20">
+          <path d="M17.3 13.3A8 8 0 0 1 6.7 2.7a8 8 0 1 0 10.6 10.6Z"></path>
+        </svg>
+        <svg id="theme-toggle-light-icon" class="hidden" aria-hidden="true" viewBox="0 0 20 20">
+          <path d="M10 2v2m0 12v2m8-8h-2M4 10H2m13.7-5.7-1.4 1.4M5.7 14.3l-1.4 1.4m11.4 0-1.4-1.4M5.7 5.7 4.3 4.3M14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"></path>
+        </svg>
+      </button>
     </div>
   </div>
 </nav>
@@ -59,17 +31,131 @@ const currentPath = Astro.url.pathname;
   const darkIcon = document.getElementById('theme-toggle-dark-icon');
   const lightIcon = document.getElementById('theme-toggle-light-icon');
 
-  if (document.documentElement.classList.contains('dark')) {
-    lightIcon?.classList.remove('hidden');
-  } else {
-    darkIcon?.classList.remove('hidden');
+  function syncThemeControl() {
+    const isDark = document.documentElement.classList.contains('dark');
+    darkIcon?.classList.toggle('hidden', isDark);
+    lightIcon?.classList.toggle('hidden', !isDark);
+    themeToggle?.setAttribute('aria-pressed', String(isDark));
+    themeToggle?.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
   }
+
+  syncThemeControl();
 
   themeToggle?.addEventListener('click', () => {
     document.documentElement.classList.toggle('dark');
-    darkIcon?.classList.toggle('hidden');
-    lightIcon?.classList.toggle('hidden');
     const isDark = document.documentElement.classList.contains('dark');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    syncThemeControl();
   });
 </script>
+
+<style>
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--color-border);
+    background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+    backdrop-filter: blur(10px);
+  }
+
+  .nav-inner {
+    width: min(100% - 2rem, 760px);
+    min-height: 64px;
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .wordmark {
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.06em;
+    text-decoration: none;
+  }
+
+  .wordmark span {
+    color: var(--color-accent-pink);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.25rem, 3vw, 1rem);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .nav-links a,
+  #theme-toggle {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-links a {
+    position: relative;
+    padding-inline: 0.45rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    right: 0.45rem;
+    bottom: 7px;
+    left: 0.45rem;
+    height: 3px;
+    background: var(--color-accent-green);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 150ms ease;
+  }
+
+  .nav-links a:hover,
+  .nav-links a[aria-current='page'] {
+    color: var(--color-text);
+  }
+
+  .nav-links a:hover::after,
+  .nav-links a[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+
+  #theme-toggle {
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+  }
+
+  #theme-toggle:hover {
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  #theme-toggle svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+  }
+
+  #theme-toggle-dark-icon {
+    fill: currentColor;
+    stroke: none;
+  }
+</style>

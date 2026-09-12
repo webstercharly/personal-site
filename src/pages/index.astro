@@ -6,8 +6,6 @@ import { getPosts, type Post } from '../lib/posts';
 import { Image } from 'astro:assets';
 
 import authorImg from '../../public/images/author.jpg';
-import githubIcon from '../../public/images/github.png';
-import linkedinIcon from '../../public/images/linkedin.png';
 
 let recentPosts: Post[] = [];
 
@@ -19,151 +17,352 @@ try {
 ---
 
 <BaseLayout
-  title="Charly Webster - Head of Software Engineering"
-  description="Personal website and blog of Charly Webster, Head of Software Engineering. Sharing insights on engineering leadership, software architecture, and team building."
+  title="Charly Webster — Head of AI Engineering"
+  description="Charly Webster is a Head of AI Engineering building teams and technology behind better experiences."
+  image="/og/site.png"
+  imageAlt="Charly Webster — Head of AI Engineering. Behind better experiences."
 >
   <Navigation />
 
-  <main id="main-content" class="relative overflow-hidden">
-    <section class="container pt-16 pb-12 md:pt-20 md:pb-16">
-      <div class="max-w-4xl mx-auto text-center fade-in-up">
-        <div class="mb-8">
-          <Image
-            src={authorImg}
-            alt="Charly Webster"
-            width={160}
-            height={160}
-            quality={85}
-            loading="eager"
-            class="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto object-cover border-4 border-gray-200 dark:border-gray-700 shadow-lg"
-          />
-        </div>
-
-        <h1 class="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r gradient-animate bg-clip-text text-transparent" style="background-image: linear-gradient(to right, var(--gradient-from), var(--gradient-to));">
-          Charly Webster
-        </h1>
-
-        <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-8">
-          Head of Software Engineering
+  <main id="main-content" class="home-shell">
+    <header class="intro">
+      <div class="intro-copy fade-in">
+        <p class="eyebrow">Head of AI Engineering.</p>
+        <h1>Behind better experiences.</h1>
+        <p class="lede">
+          I lead AI engineering at M&amp;S, building teams and AI powered experiences.
         </p>
+      </div>
 
-        <p class="text-lg text-gray-700 dark:text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
-          Building high-performing engineering teams and scalable systems.
-          Passionate about engineering leadership, software architecture, and fostering engineering excellence.
+      <div class="portrait-frame fade-in" aria-hidden="true">
+        <span class="portrait-accent"></span>
+        <Image
+          src={authorImg}
+          alt=""
+          width={320}
+          height={320}
+          quality={90}
+          loading="eager"
+          class="portrait"
+        />
+      </div>
+    </header>
+
+    <section class="about-section" aria-labelledby="about-heading">
+      <h2 id="about-heading">A bit about me</h2>
+      <div class="about-copy">
+        <p>
+          I care about building healthy engineering organisations and dependable software:
+          clear direction, pragmatic architecture, and teams with the space to do their best work.
         </p>
-
-        <div class="flex justify-center gap-3 mb-10">
-          <a
-            href="https://github.com/webstercharly"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-110 hover:shadow-md"
-            aria-label="GitHub"
-          >
-            <Image src={githubIcon} alt="GitHub" width={28} height={28} loading="lazy" class="w-7 h-7" />
-          </a>
-          <a
-            href="https://www.linkedin.com/in/charlywebster"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-110 hover:shadow-md"
-            aria-label="LinkedIn"
-          >
-            <Image src={linkedinIcon} alt="LinkedIn" width={28} height={28} loading="lazy" class="w-7 h-7" />
-          </a>
-        </div>
-
-        <div class="flex justify-center">
-          <a
-            href="/blog"
-            class="px-10 py-4 text-white font-semibold text-lg rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 hover:brightness-110"
-            style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));"
-          >
-            Read My Blog
-          </a>
-        </div>
+        <p>
+          This is where I share what I’m learning about leadership, technology, and turning
+          complicated customer problems into useful products.
+        </p>
+        <p class="inline-links">
+          You can also find me on&nbsp;<a class="accent-link accent-pink" href="https://www.linkedin.com/in/charlywebster" target="_blank" rel="noopener noreferrer">LinkedIn</a>&nbsp;and&nbsp;<a class="accent-link accent-yellow" href="https://github.com/webstercharly" target="_blank" rel="noopener noreferrer">GitHub</a>.
+        </p>
       </div>
     </section>
 
     {recentPosts.length > 0 && (
-      <section class="container border-t border-gray-200 dark:border-gray-800">
-        <div class="max-w-4xl mx-auto pt-20 pb-8">
-          <div class="flex items-center justify-between mb-10">
-            <h2 class="text-3xl font-bold">Recent Posts</h2>
-            <a
-              href="/blog"
-              class="font-medium hover:underline transition-colors"
-              style="color: var(--color-accent);"
-            >
-              View all →
-            </a>
-          </div>
+      <section class="writing-section" aria-labelledby="writing-heading">
+        <div class="section-heading">
+          <h2 id="writing-heading">Latest writing</h2>
+          <a class="accent-link accent-yellow view-all" href="/blog">All posts <span aria-hidden="true">→</span></a>
+        </div>
 
-          <div class="grid gap-6">
-            {recentPosts.map((post, index) => {
-              const readingTime = Math.ceil((post.body ?? "").split(/\s+/).length / WORDS_PER_MINUTE);
-              return (
-              <article class="p-6 rounded-lg bg-gray-50 dark:bg-gray-800 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] slide-in-right" style={`animation-delay: ${index * 0.1}s`}>
-                <a href={`/blog/${post.id}`} class="group">
-                  <div class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    <time>
-                      {post.data.pubDate.toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
+        <ol class="post-list">
+          {recentPosts.map((post, index) => {
+            const readingTime = Math.ceil((post.body ?? '').split(/\s+/).length / WORDS_PER_MINUTE);
+            const accents = ['accent-green', 'accent-pink', 'accent-yellow'];
+            return (
+              <li class="post-item">
+                <article>
+                  <div class="post-meta">
+                    <time datetime={post.data.pubDate.toISOString()}>
+                      {post.data.pubDate.toLocaleDateString('en-GB', {
                         day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
                       })}
                     </time>
-                    <span>•</span>
+                    <span aria-hidden="true">·</span>
                     <span>{readingTime} min read</span>
                   </div>
-                  <h3 class="text-xl font-bold mb-3 transition-colors" style="color: var(--color-text);" onmouseenter="this.style.color = 'var(--color-accent)'" onmouseleave="this.style.color = 'var(--color-text)'">
-                    {post.data.title}
+                  <h3>
+                    <a class={`post-title accent-link ${accents[index % accents.length]}`} href={`/blog/${post.id}`}>
+                      {post.data.title}
+                    </a>
                   </h3>
-                  <p class="text-gray-700 dark:text-gray-300 mb-4">
-                    {post.data.description}
-                  </p>
+                  <p>{post.data.description}</p>
                   {post.data.tags.length > 0 && (
-                    <div class="flex flex-wrap gap-2">
-                      {post.data.tags.map((tag) => (
-                        <span class="px-3 py-1 text-xs font-medium rounded-full transition-all duration-200 hover:scale-110" style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to)); color: white; opacity: 0.9;">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                    <ul class="tag-list" aria-label="Topics">
+                      {post.data.tags.map((tag) => <li>#{tag}</li>)}
+                    </ul>
                   )}
-                </a>
-              </article>
-              );
-            })}
-          </div>
-        </div>
+                </article>
+              </li>
+            );
+          })}
+        </ol>
       </section>
     )}
   </main>
 
-  <footer class="border-t mt-20" style="border-color: var(--color-border);">
-    <div class="container py-12">
-      <div class="max-w-4xl mx-auto">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div class="text-center md:text-left">
-            <p class="font-semibold text-lg mb-1" style="color: var(--color-text);">Charly Webster</p>
-            <p class="text-sm" style="color: var(--color-text-muted);">
-              &copy; {new Date().getFullYear()} All rights reserved.
-            </p>
-          </div>
-
-          <div class="flex flex-col md:flex-row items-center gap-4 md:gap-6">
-            <a href="https://github.com/webstercharly" target="_blank" rel="noopener noreferrer" class="text-sm font-medium hover:underline transition-colors" style="color: var(--color-text-muted);">GitHub</a>
-            <a href="https://www.linkedin.com/in/charlywebster" target="_blank" rel="noopener noreferrer" class="text-sm font-medium hover:underline transition-colors" style="color: var(--color-text-muted);">LinkedIn</a>
-            <div class="flex items-center gap-2 text-sm" style="color: var(--color-text-muted);">
-              <span>Built with</span>
-              <a href="https://astro.build" target="_blank" rel="noopener noreferrer" class="font-medium hover:underline transition-colors inline-flex items-center gap-1" style="color: var(--color-accent);">
-                Astro
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>&copy; {new Date().getFullYear()} Charly Webster.</p>
+      <p>
+        Built with&nbsp;<a class="accent-link accent-green" href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>.&nbsp;<a class="accent-link accent-pink" href="https://github.com/webstercharly/personal-site" target="_blank" rel="noopener noreferrer">Source on GitHub</a>.
+      </p>
     </div>
   </footer>
 </BaseLayout>
+
+<style>
+  .home-shell,
+  .footer-inner {
+    width: min(100% - 2rem, 760px);
+    margin-inline: auto;
+  }
+
+  .intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 210px;
+    gap: clamp(2rem, 7vw, 5rem);
+    align-items: center;
+    padding-block: clamp(4rem, 10vw, 7.5rem) clamp(4rem, 8vw, 6rem);
+  }
+
+  .eyebrow {
+    margin-bottom: 1rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  h1 {
+    max-width: 18ch;
+    font-size: clamp(2.35rem, 7vw, 4.35rem);
+    font-weight: 750;
+    letter-spacing: -0.055em;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  .lede {
+    max-width: 53ch;
+    margin-top: 1.75rem;
+    color: var(--color-text-muted);
+    font-size: clamp(1.05rem, 2vw, 1.2rem);
+    line-height: 1.7;
+    text-wrap: pretty;
+  }
+
+  .portrait-frame {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .portrait-accent {
+    position: absolute;
+    inset: 12px -12px -12px 12px;
+    z-index: -1;
+    background: var(--color-accent-yellow);
+    border: 2px solid var(--color-text);
+    border-radius: 42% 58% 48% 52% / 53% 42% 58% 47%;
+    transform: rotate(3deg);
+  }
+
+  :global(.portrait) {
+    aspect-ratio: 1;
+    border: 2px solid var(--color-text);
+    border-radius: 52% 48% 58% 42% / 43% 55% 45% 57%;
+    object-fit: cover;
+    filter: saturate(0.82) contrast(1.04);
+  }
+
+  .about-section,
+  .writing-section {
+    padding-block: clamp(3.5rem, 8vw, 5.5rem);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .about-section {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: 2rem;
+  }
+
+  h2 {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .about-copy {
+    font-size: 1.08rem;
+    line-height: 1.75;
+  }
+
+  .about-copy p + p {
+    margin-top: 1.2rem;
+  }
+
+  .inline-links {
+    color: var(--color-text-muted);
+  }
+
+  .accent-link {
+    color: inherit;
+    font-weight: 700;
+    text-decoration-line: underline;
+    text-decoration-color: var(--link-accent, var(--color-accent-green));
+    text-decoration-thickness: 0.14em;
+    text-underline-offset: 0.24em;
+    text-decoration-skip-ink: auto;
+    transition: color 150ms ease, text-decoration-thickness 150ms ease;
+  }
+
+  .accent-link:hover {
+    color: var(--color-text);
+    text-decoration-thickness: 0.22em;
+  }
+
+  .accent-green { --link-accent: var(--color-accent-green); }
+  .accent-pink { --link-accent: var(--color-accent-pink); }
+  .accent-yellow { --link-accent: var(--color-accent-yellow); }
+
+  .section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .view-all {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+  }
+
+  .post-list,
+  .tag-list {
+    padding: 0;
+    list-style: none;
+  }
+
+  .post-item + .post-item {
+    margin-top: 2.5rem;
+  }
+
+  .post-item h3 {
+    margin-block: 0.4rem 0.65rem;
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+
+  .post-title {
+    text-decoration: none;
+    background-image: linear-gradient(var(--link-accent), var(--link-accent));
+    background-position: 0 96%;
+    background-repeat: no-repeat;
+    background-size: 100% 0.12em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    transition: background-size 150ms ease;
+  }
+
+  .post-title:hover {
+    background-size: 100% 0.2em;
+  }
+
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+
+  .post-item article > p {
+    max-width: 64ch;
+    color: var(--color-text-muted);
+    line-height: 1.65;
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.9rem;
+    margin-top: 0.8rem;
+    color: var(--color-text-soft);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  .site-footer {
+    margin-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-block: 2rem 3rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.7;
+  }
+
+  .footer-inner p:last-child {
+    text-align: right;
+  }
+
+  @media (max-width: 680px) {
+    .intro {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      padding-top: 3.25rem;
+    }
+
+    .intro-copy {
+      order: 2;
+    }
+
+    .portrait-frame {
+      width: 132px;
+      order: 1;
+    }
+
+    h1 {
+      max-width: none;
+      font-size: clamp(2.2rem, 12vw, 3.35rem);
+    }
+
+    .about-section {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    .footer-inner {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .footer-inner p:last-child {
+      text-align: left;
+    }
+  }
+</style>

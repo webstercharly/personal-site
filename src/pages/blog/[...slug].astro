@@ -2,6 +2,7 @@
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navigation from '../../components/Navigation.astro';
+import SocialShare from '../../components/SocialShare.astro';
 import { WORDS_PER_MINUTE } from '../../lib/constants';
 import { getPosts, isDraft } from '../../lib/posts';
 
@@ -21,12 +22,15 @@ const draft = isDraft(entry);
 
 const wordCount = (entry.body ?? '').split(/\s+/).length;
 const readingTime = Math.ceil(wordCount / WORDS_PER_MINUTE);
+const canonicalUrl = new URL(`/blog/${entry.id}`, Astro.site).toString();
 ---
 
 <BaseLayout
   title={`${entry.data.title} - Charly Webster`}
   description={entry.data.description}
   type="article"
+  image={`/og/posts/${entry.id}.png`}
+  imageAlt={`${entry.data.title} — social preview by Charly Webster`}
   publishedTime={entry.data.pubDate.toISOString()}
   tags={entry.data.tags}
   noindex={draft}
@@ -81,19 +85,21 @@ const readingTime = Math.ceil(wordCount / WORDS_PER_MINUTE);
         )}
 
         {entry.data.tags.length > 0 && (
-          <div class="flex flex-wrap gap-2 mt-6">
+          <ul class="flex flex-wrap gap-x-4 gap-y-2 mt-6 list-none p-0" aria-label="Topics">
             {entry.data.tags.map((tag) => (
-              <span class="px-3 py-1 text-sm font-medium rounded-full transition-all duration-200 hover:scale-110" style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to)); color: white; opacity: 0.9;">
-                {tag}
-              </span>
+              <li class="text-sm" style="color: var(--color-text-muted); font-family: var(--font-mono);">
+                #{tag}
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </header>
 
       <div class="prose prose-lg dark:prose-invert max-w-none mb-12">
         <Content />
       </div>
+
+      <SocialShare title={entry.data.title} url={canonicalUrl} />
 
       <div class="border-t border-b py-8 my-12" style="border-color: var(--color-border);">
         <div class="flex items-start gap-4">
@@ -107,15 +113,15 @@ const readingTime = Math.ceil(wordCount / WORDS_PER_MINUTE);
           <div>
             <h3 class="text-lg font-bold mb-2">About {entry.data.author}</h3>
             <p class="text-gray-700 dark:text-gray-300">
-              Head of Software Engineering with a passion for building high-performing teams
-              and scalable systems. Follow me on
+              Head of AI Engineering, building teams and technology behind better customer
+              experiences. Follow me on
               <a href="https://www.linkedin.com/in/charlywebster" target="_blank" rel="noopener noreferrer" class="hover:underline transition-colors" style="color: var(--color-accent);"> LinkedIn</a>.
             </p>
           </div>
         </div>
       </div>
 
-      <div class="mt-16 -mx-4 md:-mx-12 lg:-mx-24">
+      <div class="mt-16 -mx-4 md:-mx-6 lg:-mx-12">
         <div class="px-6 py-8">
           <h2 class="text-2xl font-bold mb-6" style="color: var(--color-text);">Comments</h2>
           <div id="giscus-container" class="giscus"></div>

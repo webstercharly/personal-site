@@ -10,87 +10,192 @@ let years: string[] = [];
 
 try {
   posts = await getPosts();
-
   postsByYear = posts.reduce((acc, post) => {
     const year = post.data.pubDate.getFullYear();
-    if (!acc[year]) {
-      acc[year] = [];
-    }
-    acc[year].push(post);
+    (acc[year] ??= []).push(post);
     return acc;
   }, {} as Record<number, Post[]>);
-
   years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
-} catch (err) {
-  console.error('Failed to load blog posts:', err);
+} catch (error) {
+  console.error('Failed to load blog posts:', error);
 }
 ---
 
 <BaseLayout
-  title="Blog - Charly Webster"
-  description="Articles about engineering leadership, software architecture, testing strategies, and building high-performing teams."
+  title="Writing — Charly Webster"
+  description="Writing by Charly Webster about engineering leadership, software architecture, teams, and applied AI."
 >
   <Navigation />
 
-  <main id="main-content" class="container pb-12">
-    <div class="max-w-4xl mx-auto">
-      <div class="pt-20 mb-12">
-        <h1 class="text-4xl md:text-5xl font-bold mb-6">Blog</h1>
-        <p class="text-lg" style="color: var(--color-text-muted);">
-          Thoughts on engineering leadership, software architecture, and team building.
-        </p>
-      </div>
+  <main id="main-content" class="writing-shell">
+    <header class="page-header fade-in">
+      <p class="eyebrow">Notes from the work</p>
+      <h1>Writing</h1>
+      <p>Thoughts on engineering leadership, software architecture, teams, and applied AI.</p>
+    </header>
 
-      {posts.length === 0 ? (
-        <div class="text-center py-12">
-          <p class="text-gray-600 dark:text-gray-400 text-lg">
-            No posts published yet. Check back soon!
-          </p>
-        </div>
-      ) : (
-        years.map((year) => (
-          <section class="mb-16">
-            <h2 class="text-3xl font-bold mb-6 pb-3 text-gray-900 dark:text-white border-b-2" style="border-color: var(--color-border);">{year}</h2>
-            <div class="space-y-6">
-              {postsByYear[Number(year)]?.map((post) => {
-                const readingTime = Math.ceil((post.body ?? "").split(/\s+/).length / WORDS_PER_MINUTE);
-                return (
-                <article class="p-6 rounded-lg bg-gray-50 dark:bg-gray-800 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-                  <a href={`/blog/${post.id}`} class="group">
-                    <div class="flex items-center gap-3 text-sm mb-2" style="color: var(--color-text-muted);">
-                      <time>
-                        {post.data.pubDate.toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
+    {posts.length === 0 ? (
+      <p class="empty-state">No posts published yet. Check back soon.</p>
+    ) : (
+      years.map((year) => (
+        <section class="year-group" aria-labelledby={`year-${year}`}>
+          <h2 id={`year-${year}`}>{year}</h2>
+          <ol class="post-list">
+            {postsByYear[Number(year)]?.map((post, index) => {
+              const readingTime = Math.ceil((post.body ?? '').split(/\s+/).length / WORDS_PER_MINUTE);
+              const accents = ['accent-green', 'accent-pink', 'accent-yellow'];
+              return (
+                <li>
+                  <article>
+                    <div class="post-meta">
+                      <time datetime={post.data.pubDate.toISOString()}>
+                        {post.data.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </time>
-                      <span>•</span>
+                      <span aria-hidden="true">·</span>
                       <span>{readingTime} min read</span>
                     </div>
-                    <h3 class="text-xl md:text-2xl font-bold mb-3 transition-colors" style="color: var(--color-text);" onmouseenter="this.style.color = 'var(--color-accent)'" onmouseleave="this.style.color = 'var(--color-text)'">
-                      {post.data.title}
+                    <h3>
+                      <a class={`post-title ${accents[index % accents.length]}`} href={`/blog/${post.id}`}>
+                        {post.data.title}
+                      </a>
                     </h3>
-                    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                      {post.data.description}
-                    </p>
+                    <p>{post.data.description}</p>
                     {post.data.tags.length > 0 && (
-                      <div class="flex flex-wrap gap-2">
-                        {post.data.tags.map((tag) => (
-                          <span class="px-3 py-1 text-xs font-medium rounded-full transition-all duration-200 hover:scale-110" style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to)); color: white; opacity: 0.9;">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
+                      <ul class="tag-list" aria-label="Topics">
+                        {post.data.tags.map((tag) => <li>#{tag}</li>)}
+                      </ul>
                     )}
-                  </a>
-                </article>
-                );
-              })}
-            </div>
-          </section>
-        ))
-      )}
-    </div>
+                  </article>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      ))
+    )}
   </main>
 </BaseLayout>
+
+<style>
+  .writing-shell {
+    width: min(100% - 2rem, 760px);
+    margin-inline: auto;
+    padding-bottom: 5rem;
+  }
+
+  .page-header {
+    padding-block: clamp(4rem, 10vw, 7rem);
+  }
+
+  .eyebrow,
+  .post-meta,
+  .tag-list,
+  .year-group > h2 {
+    font-family: var(--font-mono);
+  }
+
+  .eyebrow {
+    margin-bottom: 0.8rem;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  h1 {
+    font-size: clamp(3rem, 9vw, 5.5rem);
+    font-weight: 760;
+    letter-spacing: -0.06em;
+    line-height: 1;
+  }
+
+  .page-header > p:last-child {
+    max-width: 58ch;
+    margin-top: 1.4rem;
+    color: var(--color-text-muted);
+    font-size: 1.08rem;
+  }
+
+  .year-group {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: clamp(1.5rem, 5vw, 3.5rem);
+    padding-block: 3.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .year-group > h2 {
+    color: var(--color-text-soft);
+    font-size: 0.85rem;
+  }
+
+  .post-list,
+  .tag-list {
+    padding: 0;
+    list-style: none;
+  }
+
+  .post-list > li + li {
+    margin-top: 2.8rem;
+  }
+
+  .post-meta {
+    display: flex;
+    gap: 0.45rem;
+    color: var(--color-text-soft);
+    font-size: 0.75rem;
+  }
+
+  h3 {
+    margin-block: 0.4rem 0.65rem;
+    font-size: clamp(1.35rem, 4vw, 1.8rem);
+    line-height: 1.25;
+  }
+
+  .post-title {
+    color: var(--color-text);
+    font-weight: 750;
+    text-decoration: none;
+    background-image: linear-gradient(var(--link-accent), var(--link-accent));
+    background-position: 0 96%;
+    background-repeat: no-repeat;
+    background-size: 100% 0.12em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    transition: background-size 150ms ease;
+  }
+
+  .post-title:hover {
+    background-size: 100% 0.2em;
+  }
+
+  .accent-green { --link-accent: var(--color-accent-green); }
+  .accent-pink { --link-accent: var(--color-accent-pink); }
+  .accent-yellow { --link-accent: var(--color-accent-yellow); }
+
+  article > p {
+    color: var(--color-text-muted);
+    line-height: 1.65;
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.9rem;
+    margin-top: 0.8rem;
+    color: var(--color-text-soft);
+    font-size: 0.75rem;
+  }
+
+  .empty-state {
+    padding-block: 4rem;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 560px) {
+    .year-group {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+</style>

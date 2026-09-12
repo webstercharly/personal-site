@@ -50,33 +50,6 @@ function wrapText(value: string, maxCharacters: number, maxLines: number): strin
   return lines.slice(0, maxLines);
 }
 
-function createPixelFlow(): string {
-  const colours = ['#27b467', '#77d68f', '#e6b93f', '#e8548f'];
-  const pixels: string[] = [];
-  const size = 18;
-
-  for (let x = -size; x <= CARD_WIDTH + size; x += size) {
-    const progress = x / CARD_WIDTH;
-    const step = Math.round(Math.sin(progress * Math.PI * 2.25) * 1.15) * size;
-    const lateRise = Math.max(0, progress - 0.82) * 1700;
-    const centreY = 420 + progress * 90 - lateRise + step;
-
-    for (let layer = -2; layer <= 2; layer += 1) {
-      const distance = Math.abs(layer);
-      const colourIndex = Math.max(
-        0,
-        Math.min(colours.length - 1, Math.floor(progress * colours.length)),
-      );
-      const opacity = distance === 0 ? 0.92 : distance === 1 ? 0.48 : 0.2;
-      pixels.push(
-        `<rect x="${x}" y="${Math.round(centreY + layer * size)}" width="${size}" height="${size}" fill="${colours[colourIndex]}" opacity="${opacity}" />`,
-      );
-    }
-  }
-
-  return pixels.join('');
-}
-
 function createPixelDither(): string {
   const pixels: string[] = [];
   const size = 12;
@@ -105,7 +78,6 @@ function createPixelDither(): string {
 export async function generateSocialCard({ title, label }: SocialCardData): Promise<Buffer> {
   const titleLines = wrapText(title, 24, 4);
   const titleStartY = titleLines.length > 3 ? 190 : 220;
-  const pixelFlow = createPixelFlow();
   const pixelDither = createPixelDither();
   const titleMarkup = titleLines
     .map(
@@ -118,7 +90,6 @@ export async function generateSocialCard({ title, label }: SocialCardData): Prom
     <svg width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
       <rect width="1200" height="630" fill="#121914" />
       <g shape-rendering="crispEdges">${pixelDither}</g>
-      <g shape-rendering="crispEdges">${pixelFlow}</g>
 
       <g shape-rendering="crispEdges">
         <path d="M1044 54h12v24h24v12h-24v24h-12V90h-24V78h24z" fill="#e8548f" />

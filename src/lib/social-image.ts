@@ -50,70 +50,94 @@ function wrapText(value: string, maxCharacters: number, maxLines: number): strin
   return lines.slice(0, maxLines);
 }
 
+function createPixelFlow(): string {
+  const colours = ['#27b467', '#77d68f', '#e6b93f', '#e8548f'];
+  const pixels: string[] = [];
+  const size = 18;
+
+  for (let x = -size; x <= CARD_WIDTH + size; x += size) {
+    const progress = x / CARD_WIDTH;
+    const step = Math.round(Math.sin(progress * Math.PI * 2.25) * 1.15) * size;
+    const lateRise = Math.max(0, progress - 0.82) * 1700;
+    const centreY = 420 + progress * 90 - lateRise + step;
+
+    for (let layer = -2; layer <= 2; layer += 1) {
+      const distance = Math.abs(layer);
+      const colourIndex = Math.max(
+        0,
+        Math.min(colours.length - 1, Math.floor(progress * colours.length)),
+      );
+      const opacity = distance === 0 ? 0.92 : distance === 1 ? 0.48 : 0.2;
+      pixels.push(
+        `<rect x="${x}" y="${Math.round(centreY + layer * size)}" width="${size}" height="${size}" fill="${colours[colourIndex]}" opacity="${opacity}" />`,
+      );
+    }
+  }
+
+  return pixels.join('');
+}
+
+function createPixelDither(): string {
+  const pixels: string[] = [];
+  const size = 12;
+
+  for (let y = 18; y < CARD_HEIGHT; y += 30) {
+    for (let x = 18; x < CARD_WIDTH; x += 30) {
+      const progress = x / CARD_WIDTH;
+      const pattern = (x * 7 + y * 11) % 101;
+      if (pattern > 8 + progress * 22) continue;
+
+      const colour =
+        (x + y) % 90 === 0
+          ? '#e8548f'
+          : (x + y) % 60 === 0
+            ? '#e6b93f'
+            : '#77d68f';
+      pixels.push(
+        `<rect x="${x}" y="${y}" width="${size}" height="${size}" fill="${colour}" opacity="${(0.05 + progress * 0.13).toFixed(2)}" />`,
+      );
+    }
+  }
+
+  return pixels.join('');
+}
+
 export async function generateSocialCard({ title, label }: SocialCardData): Promise<Buffer> {
   const titleLines = wrapText(title, 24, 4);
   const titleStartY = titleLines.length > 3 ? 190 : 220;
+  const pixelFlow = createPixelFlow();
+  const pixelDither = createPixelDither();
   const titleMarkup = titleLines
-    .map((line, index) => `<tspan x="76" dy="${index === 0 ? 0 : 72}">${escapeXml(line)}</tspan>`)
+    .map(
+      (line, index) =>
+        `<tspan x="76" dy="${index === 0 ? 0 : 72}">${escapeXml(line)}</tspan>`,
+    )
     .join('');
 
   const svg = `
     <svg width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#111714" />
-          <stop offset="0.5" stop-color="#183025" />
-          <stop offset="1" stop-color="#30252d" />
-        </linearGradient>
-        <radialGradient id="greenGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0" stop-color="#38d982" stop-opacity="0.64" />
-          <stop offset="1" stop-color="#38d982" stop-opacity="0" />
-        </radialGradient>
-        <radialGradient id="pinkGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0" stop-color="#e8548f" stop-opacity="0.34" />
-          <stop offset="1" stop-color="#e8548f" stop-opacity="0" />
-        </radialGradient>
-        <radialGradient id="amberGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0" stop-color="#e6b93f" stop-opacity="0.38" />
-          <stop offset="1" stop-color="#e6b93f" stop-opacity="0" />
-        </radialGradient>
-        <linearGradient id="flow" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stop-color="#27b467" stop-opacity="0" />
-          <stop offset="0.42" stop-color="#27b467" />
-          <stop offset="0.72" stop-color="#e6b93f" />
-          <stop offset="1" stop-color="#e8548f" stop-opacity="0.32" />
-        </linearGradient>
-        <linearGradient id="quiet" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stop-color="#101512" stop-opacity="0.86" />
-          <stop offset="0.44" stop-color="#101512" stop-opacity="0.5" />
-          <stop offset="0.72" stop-color="#101512" stop-opacity="0" />
-        </linearGradient>
-        <filter id="blur">
-          <feGaussianBlur stdDeviation="38" />
-        </filter>
-      </defs>
+      <rect width="1200" height="630" fill="#121914" />
+      <g shape-rendering="crispEdges">${pixelDither}</g>
+      <g shape-rendering="crispEdges">${pixelFlow}</g>
 
-      <rect width="1200" height="630" fill="url(#background)" />
-
-      <g filter="url(#blur)">
-        <ellipse cx="950" cy="300" rx="390" ry="330" fill="url(#greenGlow)" />
-        <ellipse cx="1080" cy="110" rx="460" ry="330" fill="url(#pinkGlow)" />
-        <ellipse cx="925" cy="655" rx="390" ry="255" fill="url(#amberGlow)" />
-        <path d="M-90 565 C235 385 460 650 745 460 S1060 160 1450 330" fill="none" stroke="url(#flow)" stroke-width="118" stroke-linecap="round" opacity="0.23" />
+      <g shape-rendering="crispEdges">
+        <path d="M1044 54h12v24h24v12h-24v24h-12V90h-24V78h24z" fill="#e8548f" />
+        <path d="M1128 152h8v16h16v8h-16v16h-8v-16h-16v-8h16z" fill="#e6b93f" />
+        <path d="M946 106h6v12h12v6h-12v12h-6v-12h-12v-6h12z" fill="#77d68f" />
+        <rect x="1092" y="82" width="12" height="12" fill="#77d68f" />
+        <rect x="1164" y="118" width="12" height="12" fill="#fff4e8" opacity="0.7" />
       </g>
 
-      <path d="M-80 560 C230 390 470 642 748 454 S1065 165 1450 330" fill="none" stroke="url(#flow)" stroke-width="3" stroke-linecap="round" opacity="0.75" />
-      <path d="M-120 610 C230 445 478 700 790 492 S1090 225 1470 390" fill="none" stroke="#fffaf5" stroke-width="1.5" stroke-linecap="round" opacity="0.16" />
-      <path d="M545 -60 C720 120 756 258 905 302 S1120 245 1420 60" fill="none" stroke="#fffaf5" stroke-width="1.5" stroke-linecap="round" opacity="0.12" />
+      <text x="76" y="78" fill="#d9d2c9" font-family="DejaVu Sans Mono, monospace" font-size="23" font-weight="700" letter-spacing="0.8">${escapeXml(label)}</text>
+      <g shape-rendering="crispEdges">
+        <rect x="76" y="103" width="20" height="6" fill="#27b467" />
+        <rect x="100" y="103" width="20" height="6" fill="#e6b93f" />
+        <rect x="124" y="103" width="20" height="6" fill="#e8548f" />
+      </g>
+      <text x="76" y="${titleStartY}" fill="#fff4e8" font-family="DejaVu Sans Mono, monospace" font-size="56" font-weight="700" letter-spacing="-2">${titleMarkup}</text>
 
-      <rect width="1200" height="630" fill="url(#quiet)" />
-
-      <text x="76" y="78" fill="#ddd5cf" font-family="DejaVu Sans Mono, monospace" font-size="24" font-weight="700" letter-spacing="0.8">${escapeXml(label)}</text>
-      <rect x="76" y="105" width="88" height="5" rx="2.5" fill="#27b467" />
-      <text x="76" y="${titleStartY}" fill="#fffaf5" font-family="DejaVu Sans, Arial, sans-serif" font-size="62" font-weight="700" letter-spacing="-1.5">${titleMarkup}</text>
-
-      <text x="76" y="548" fill="#fffaf5" font-family="DejaVu Sans Mono, monospace" font-size="24" font-weight="700">Head of AI Engineering</text>
-      <text x="76" y="586" fill="#d4ccc6" font-family="DejaVu Sans Mono, monospace" font-size="21">charlywebster.com</text>
+      <text x="76" y="548" fill="#fff4e8" font-family="DejaVu Sans Mono, monospace" font-size="23" font-weight="700">Head of AI Engineering</text>
+      <text x="76" y="586" fill="#d9d2c9" font-family="DejaVu Sans Mono, monospace" font-size="20">charlywebster.com</text>
     </svg>
   `;
 

@@ -18,4 +18,4 @@ export const BREAKPOINTS = {
 // Site metadata
 export const SITE_NAME = 'Charly Webster';
 export const SITE_TITLE = 'Head of AI Engineering';
-export const SITE_DESCRIPTION = 'Personal website and writing by Charly Webster, Head of AI Engineering. Sharing insights on AI engineering, leadership, software architecture, and teams.';
+export const SITE_DESCRIPTION = 'Personal website and writing by Charly Webster, Head of AI Engineering. Sharing insights on AI, engineering, leadership, software architecture, and teams.';

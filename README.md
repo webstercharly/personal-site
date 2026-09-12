@@ -9,6 +9,8 @@ A modern personal website and blog built with Astro, featuring markdown-based bl
 - **GitHub Comments**: Integrated [giscus](https://giscus.app/) for blog comments via GitHub Discussions
 - **Dark Mode**: Built-in dark mode toggle with system preference detection
 - **SEO Optimized**: Meta tags, Open Graph, Twitter Cards, and sitemap
+- **Custom Social Cards**: Build-time 1200×630 previews for the homepage and every published post
+- **Article Sharing**: Accessible LinkedIn, Bluesky, and copy-link actions
 - **RSS Feed**: Automatic RSS feed generation at `/rss.xml`
 - **Responsive Design**: Mobile-first responsive design
 - **Performance**: Minimal JavaScript, optimized assets, fast page loads

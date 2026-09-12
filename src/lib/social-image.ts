@@ -60,43 +60,60 @@ export async function generateSocialCard({ title, label }: SocialCardData): Prom
   const svg = `
     <svg width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse">
-          <path d="M44 0H0V44" fill="none" stroke="#2d3531" stroke-width="1" />
-        </pattern>
-        <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0" stop-color="#27b467" stop-opacity="0.18" />
-          <stop offset="1" stop-color="#27b467" stop-opacity="0" />
+        <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#111714" />
+          <stop offset="0.5" stop-color="#183025" />
+          <stop offset="1" stop-color="#30252d" />
+        </linearGradient>
+        <radialGradient id="greenGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stop-color="#38d982" stop-opacity="0.64" />
+          <stop offset="1" stop-color="#38d982" stop-opacity="0" />
         </radialGradient>
+        <radialGradient id="pinkGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stop-color="#e8548f" stop-opacity="0.34" />
+          <stop offset="1" stop-color="#e8548f" stop-opacity="0" />
+        </radialGradient>
+        <radialGradient id="amberGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stop-color="#e6b93f" stop-opacity="0.38" />
+          <stop offset="1" stop-color="#e6b93f" stop-opacity="0" />
+        </radialGradient>
+        <linearGradient id="flow" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#27b467" stop-opacity="0" />
+          <stop offset="0.42" stop-color="#27b467" />
+          <stop offset="0.72" stop-color="#e6b93f" />
+          <stop offset="1" stop-color="#e8548f" stop-opacity="0.32" />
+        </linearGradient>
+        <linearGradient id="quiet" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#101512" stop-opacity="0.86" />
+          <stop offset="0.44" stop-color="#101512" stop-opacity="0.5" />
+          <stop offset="0.72" stop-color="#101512" stop-opacity="0" />
+        </linearGradient>
+        <filter id="blur">
+          <feGaussianBlur stdDeviation="38" />
+        </filter>
       </defs>
 
-      <rect width="1200" height="630" fill="#171c1a" />
-      <rect width="1200" height="630" fill="url(#grid)" opacity="0.55" />
-      <circle cx="1030" cy="315" r="290" fill="url(#glow)" />
-      <rect x="0" y="0" width="830" height="630" fill="#171c1a" opacity="0.91" />
+      <rect width="1200" height="630" fill="url(#background)" />
 
-      <g fill="none" stroke="#46534c" stroke-width="3">
-        <path d="M875 178 1008 112 1125 220 1060 350 1160 454" />
-        <path d="M875 178 915 327 1060 350 986 504" />
-        <path d="M1008 112 1060 350" />
-        <path d="M915 327 986 504" />
-      </g>
-      <g stroke="#171c1a" stroke-width="6">
-        <circle cx="875" cy="178" r="17" fill="#27b467" />
-        <circle cx="1008" cy="112" r="12" fill="#e8548f" />
-        <circle cx="1125" cy="220" r="20" fill="#e6b93f" />
-        <circle cx="915" cy="327" r="13" fill="#e8548f" />
-        <circle cx="1060" cy="350" r="23" fill="#27b467" />
-        <circle cx="1160" cy="454" r="12" fill="#e8548f" />
-        <circle cx="986" cy="504" r="18" fill="#e6b93f" />
+      <g filter="url(#blur)">
+        <ellipse cx="950" cy="300" rx="390" ry="330" fill="url(#greenGlow)" />
+        <ellipse cx="1080" cy="110" rx="460" ry="330" fill="url(#pinkGlow)" />
+        <ellipse cx="925" cy="655" rx="390" ry="255" fill="url(#amberGlow)" />
+        <path d="M-90 565 C235 385 460 650 745 460 S1060 160 1450 330" fill="none" stroke="url(#flow)" stroke-width="118" stroke-linecap="round" opacity="0.23" />
       </g>
 
-      <text x="76" y="78" fill="#c4bbb5" font-family="DejaVu Sans Mono, monospace" font-size="24" font-weight="700" letter-spacing="0.8">${escapeXml(label)}</text>
+      <path d="M-80 560 C230 390 470 642 748 454 S1065 165 1450 330" fill="none" stroke="url(#flow)" stroke-width="3" stroke-linecap="round" opacity="0.75" />
+      <path d="M-120 610 C230 445 478 700 790 492 S1090 225 1470 390" fill="none" stroke="#fffaf5" stroke-width="1.5" stroke-linecap="round" opacity="0.16" />
+      <path d="M545 -60 C720 120 756 258 905 302 S1120 245 1420 60" fill="none" stroke="#fffaf5" stroke-width="1.5" stroke-linecap="round" opacity="0.12" />
+
+      <rect width="1200" height="630" fill="url(#quiet)" />
+
+      <text x="76" y="78" fill="#ddd5cf" font-family="DejaVu Sans Mono, monospace" font-size="24" font-weight="700" letter-spacing="0.8">${escapeXml(label)}</text>
       <rect x="76" y="105" width="88" height="5" rx="2.5" fill="#27b467" />
       <text x="76" y="${titleStartY}" fill="#fffaf5" font-family="DejaVu Sans, Arial, sans-serif" font-size="62" font-weight="700" letter-spacing="-1.5">${titleMarkup}</text>
 
       <text x="76" y="548" fill="#fffaf5" font-family="DejaVu Sans Mono, monospace" font-size="24" font-weight="700">Head of AI Engineering</text>
-      <text x="76" y="586" fill="#c4bbb5" font-family="DejaVu Sans Mono, monospace" font-size="21">charlywebster.com</text>
-      <rect x="0" y="622" width="1200" height="8" fill="#27b467" />
+      <text x="76" y="586" fill="#d4ccc6" font-family="DejaVu Sans Mono, monospace" font-size="21">charlywebster.com</text>
     </svg>
   `;
 

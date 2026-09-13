@@ -1,6 +1,6 @@
 # Charly Webster’s personal site
 
-This is the source for [charlywebster.com](https://charlywebster.com): a small personal site and blog built with Astro.
+This is the source for [charlywebster.com](https://www.charlywebster.com): a small personal site and blog built with Astro.
 
 The site is intentionally simple. Posts live in Markdown or MDX, the site is statically generated, and the browser only gets JavaScript where it earns its place.
 
@@ -162,7 +162,7 @@ Set the canonical site URL in `astro.config.mjs`:
 
 ```javascript
 export default defineConfig({
-  site: 'https://charlywebster.com',
+  site: 'https://www.charlywebster.com',
 });
 ```
 
@@ -207,6 +207,6 @@ MIT. Use it as a starting point if it is useful.
 
 ## Contact
 
-- [Website](https://charlywebster.com)
+- [Website](https://www.charlywebster.com)
 - [LinkedIn](https://www.linkedin.com/in/charlywebster)
 - [GitHub](https://github.com/webstercharly)

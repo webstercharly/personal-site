@@ -1,0 +1,221 @@
+---
+import { Image } from 'astro:assets';
+import Navigation from '../components/Navigation.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import authorImg from '../../public/images/author.jpg';
+
+const siteUrl = Astro.site ?? new URL('https://www.charlywebster.com');
+const profileUrl = new URL('/about/', siteUrl).toString();
+const personId = `${profileUrl}#charly-webster`;
+const description = 'About Charly Webster, Head of AI Engineering at M&S and leader of a centralised AI Product Engineering Centre of Excellence.';
+---
+
+<BaseLayout
+  title="About Charly Webster — Head of AI Engineering at M&S"
+  description={description}
+  image="/og/site.png"
+  imageAlt="Charly Webster — Head of AI Engineering"
+>
+  <Navigation />
+
+  <main id="main-content" class="about-shell">
+    <header class="profile-header fade-in">
+      <div>
+        <p class="eyebrow">About</p>
+        <h1>Charly Webster</h1>
+        <p class="role">Head of AI Engineering at <a href="https://www.marksandspencer.com/" target="_blank" rel="noopener noreferrer">M&amp;S</a>.</p>
+      </div>
+
+      <div class="portrait-frame">
+        <span class="portrait-accent" aria-hidden="true"></span>
+        <Image
+          src={authorImg}
+          alt="Charly Webster"
+          width={240}
+          height={240}
+          quality={90}
+          loading="eager"
+          class="portrait"
+        />
+      </div>
+    </header>
+
+    <section aria-labelledby="work-heading">
+      <h2 id="work-heading">AI product engineering</h2>
+      <p>
+        I lead a centralised AI Product Engineering Centre of Excellence. My team partners with the
+        business to turn high-value opportunities into production-ready products, enabled by a
+        governed, scalable AI platform.
+      </p>
+      <p>
+        I care about clear direction, pragmatic architecture and building healthy engineering
+        organisations where teams have the space to do their best work.
+      </p>
+    </section>
+
+    <section aria-labelledby="writing-heading">
+      <h2 id="writing-heading">What I write about</h2>
+      <p>
+        This site is for personal technical writing: open-source tools, self-hosting, AI engineering,
+        software architecture and the lessons hidden inside things that did not work first time.
+      </p>
+      <p>
+        You can read my <a href="/blog">latest writing</a>, find my code on
+        <a href="https://github.com/webstercharly" target="_blank" rel="noopener noreferrer">GitHub</a>,
+        or see my professional background on
+        <a href="https://www.linkedin.com/in/charlywebster" target="_blank" rel="noopener noreferrer">LinkedIn</a>.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>&copy; {new Date().getFullYear()} Charly Webster.</p>
+    </div>
+  </footer>
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "@id": profileUrl,
+    "url": profileUrl,
+    "name": "About Charly Webster",
+    "description": description,
+    "mainEntity": {
+      "@type": "Person",
+      "@id": personId,
+      "name": "Charly Webster",
+      "url": profileUrl,
+      "image": new URL('/images/author.jpg', siteUrl).toString(),
+      "jobTitle": "Head of AI Engineering",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "M&S",
+        "url": "https://www.marksandspencer.com/"
+      },
+      "sameAs": [
+        "https://www.linkedin.com/in/charlywebster",
+        "https://github.com/webstercharly"
+      ]
+    }
+  })} />
+</BaseLayout>
+
+<style>
+  .about-shell,
+  .footer-inner {
+    width: min(100% - 2rem, 760px);
+    margin-inline: auto;
+  }
+
+  .about-shell {
+    padding-block: clamp(4rem, 10vw, 7rem);
+  }
+
+  .profile-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 180px;
+    gap: clamp(2rem, 7vw, 5rem);
+    align-items: center;
+    margin-bottom: clamp(4rem, 9vw, 6rem);
+  }
+
+  .eyebrow {
+    margin-bottom: 0.8rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    font-weight: 750;
+    letter-spacing: -0.055em;
+    line-height: 1.05;
+  }
+
+  .role {
+    margin-top: 1.3rem;
+    color: var(--color-text-muted);
+    font-size: clamp(1.05rem, 2vw, 1.2rem);
+    line-height: 1.6;
+  }
+
+  .portrait-frame {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .portrait-accent {
+    position: absolute;
+    inset: 10px -10px -10px 10px;
+    z-index: -1;
+    background: var(--brand-accent, var(--color-accent-pink));
+    border: 2px solid var(--color-text);
+    border-radius: 42% 58% 48% 52% / 53% 42% 58% 47%;
+    transform: rotate(3deg);
+  }
+
+  .portrait {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 2px solid var(--color-text);
+    border-radius: 48% 52% 44% 56% / 54% 44% 56% 46%;
+    object-fit: cover;
+  }
+
+  section {
+    padding-block: 2.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  h2 {
+    margin-bottom: 1.25rem;
+    font-size: clamp(1.55rem, 4vw, 2rem);
+    letter-spacing: -0.035em;
+  }
+
+  section p {
+    max-width: 65ch;
+    color: var(--color-text-muted);
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
+
+  section p + p {
+    margin-top: 1.2rem;
+  }
+
+  a {
+    color: var(--color-text);
+    text-decoration-color: var(--brand-accent, var(--color-accent-pink));
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.2em;
+  }
+
+  a:hover {
+    text-decoration-thickness: 3px;
+  }
+
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .footer-inner {
+    padding-block: 2rem;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 620px) {
+    .profile-header {
+      grid-template-columns: 1fr;
+    }
+
+    .portrait-frame {
+      width: 150px;
+      grid-row: 1;
+    }
+  }
+</style>

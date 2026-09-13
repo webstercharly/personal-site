@@ -15,6 +15,7 @@
     "test:smoke": "node test/smoke.mjs",
     "test:editorial": "node --test test/editorial-audit.test.mjs",
     "test:site": "node --test test/site-validation.test.mjs",
+    "test:seo": "node --test test/seo-identity.test.mjs",
     "validate:site": "node scripts/validate-site.mjs dist",
     "audit:drafts": "node scripts/editorial-audit.mjs",
     "audit:posts": "node scripts/editorial-audit.mjs --all"

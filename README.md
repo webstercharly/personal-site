@@ -45,8 +45,13 @@ To check the production build locally:
 
 ```bash
 npm run build
+npm run test:site
+npm run validate:site
 npm run preview
 ```
+
+The site validator checks every generated HTML page for broken internal links,
+missing assets, invalid fragments, canonical URLs, and required SEO/social metadata.
 
 ## Comments with giscus
 
@@ -85,7 +90,8 @@ The blog uses giscus to turn GitHub Discussions into a comment system.
 │   ├── pages/               # Routes and page templates
 │   └── styles/              # Global styles and theme variables
 ├── scripts/
-│   └── editorial-audit.mjs  # Deterministic post checks
+│   ├── editorial-audit.mjs  # Deterministic post checks
+│   └── validate-site.mjs    # Generated links and metadata checks
 ├── .github/workflows/       # Editorial, build and Lighthouse checks
 ├── astro.config.mjs
 ├── netlify.toml

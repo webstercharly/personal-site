@@ -1,0 +1,28 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+      time: "08:00"
+      timezone: Europe/London
+    open-pull-requests-limit: 5
+    groups:
+      astro-ecosystem:
+        patterns:
+          - astro
+          - "astro-*"
+          - "@astrojs/*"
+        update-types:
+          - minor
+          - patch
+      routine-dependencies:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - astro
+          - "astro-*"
+          - "@astrojs/*"
+        update-types:
+          - minor
+          - patch

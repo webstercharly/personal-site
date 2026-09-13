@@ -13,6 +13,7 @@
     "astro": "astro",
     "screenshots": "node test/take-screenshots.mjs",
     "test:smoke": "node test/smoke.mjs",
+    "test:editorial": "node --test test/editorial-audit.test.mjs",
     "audit:drafts": "node scripts/editorial-audit.mjs",
     "audit:posts": "node scripts/editorial-audit.mjs --all"
   },
@@ -33,7 +34,7 @@
   },
   "devDependencies": {
     "@lhci/cli": "^0.15.1",
-    "js-yaml": "^4.3.1",
+    "js-yaml": "^5.4.1",
     "puppeteer": "^25.10.0"
   }
 }

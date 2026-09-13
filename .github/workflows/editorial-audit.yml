@@ -3,6 +3,10 @@ name: Editorial audit
 on:
   pull_request:
     paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/editorial-audit.mjs'
+      - 'test/editorial-audit.test.mjs'
       - 'src/content/blog/**'
 
 permissions:
@@ -26,6 +30,9 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      - name: Test editorial audit
+        run: npm run test:editorial
 
       - name: Find changed post files
         id: changed

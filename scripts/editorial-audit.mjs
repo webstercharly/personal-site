@@ -27,7 +27,7 @@ import { readFileSync, existsSync, writeFileSync } from 'node:fs';
 import { readdir } from 'node:fs/promises';
 import { dirname, join, resolve, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const BLOG_DIR = join(ROOT, 'src/content/blog');

@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" fill="#3B82F6"/>
-  <text x="50" y="70" font-family="Arial, sans-serif" font-size="60" font-weight="bold" fill="white" text-anchor="middle">CW</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>Charly Webster</title>
+  <rect width="64" height="64" rx="12" fill="#24211f"/>
+  <path d="M18 20h10c5.5 0 9 3.4 9 8s-3.5 8-9 8h-4v8h-6V20Zm6 5v6h3.5c2.2 0 3.5-1.1 3.5-3s-1.3-3-3.5-3H24Z" fill="#fffaf5"/>
+  <path d="M42 20h6v24h-6z" fill="#54d88d"/>
+  <path d="M40 44h10" stroke="#54d88d" stroke-width="3" stroke-linecap="round"/>
 </svg>

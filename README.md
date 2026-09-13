@@ -95,7 +95,7 @@ The blog uses giscus to turn GitHub Discussions into a comment system.
 
 ## Writing a post
 
-Create a `.md` or `.mdx` file in `src/content/blog/`:
+Use Markdown by default. Create a `.md` file in `src/content/blog/` for an ordinary post:
 
 ```markdown
 ---
@@ -108,6 +108,8 @@ tags: ['engineering', 'architecture']
 
 The post starts here.
 ```
+
+Use `.mdx` only when the post needs an Astro component, a JavaScript expression or another MDX feature. This keeps plain writing portable and makes the extra compilation layer an explicit choice rather than the default.
 
 ### Drafts
 

@@ -1,0 +1,25 @@
+name: Browser smoke check
+
+on:
+  pull_request:
+
+jobs:
+  smoke:
+    name: Production browser smoke tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Start production preview
+        run: npm run preview -- --host 127.0.0.1 &
+
+      - name: Run browser smoke tests
+        run: npm run test:smoke

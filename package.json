@@ -12,6 +12,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "screenshots": "node test/take-screenshots.mjs",
+    "test:smoke": "node test/smoke.mjs",
     "audit:drafts": "node scripts/editorial-audit.mjs",
     "audit:posts": "node scripts/editorial-audit.mjs --all"
   },

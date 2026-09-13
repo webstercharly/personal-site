@@ -12,6 +12,7 @@ const currentPath = Astro.url.pathname;
 
     <div class="nav-links">
       <a href="/" aria-current={currentPath === '/' ? 'page' : undefined}>Home</a>
+      <a href="/about" aria-current={currentPath.startsWith('/about') ? 'page' : undefined}>About</a>
       <a href="/blog" aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}>Writing</a>
 
       <button id="theme-toggle" type="button" aria-label="Switch colour theme" aria-pressed="false">

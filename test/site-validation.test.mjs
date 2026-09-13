@@ -6,7 +6,7 @@ import test from 'node:test';
 
 import { validateSite } from '../scripts/validate-site.mjs';
 
-const SITE = 'https://charlywebster.com';
+const SITE = 'https://www.charlywebster.com';
 
 function html(path, body = '') {
   const url = `${SITE}${path}`;

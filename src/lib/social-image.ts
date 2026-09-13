@@ -108,7 +108,7 @@ export async function generateSocialCard({ title, label }: SocialCardData): Prom
       <text x="76" y="${titleStartY}" fill="#fff4e8" font-family="DejaVu Sans Mono, monospace" font-size="56" font-weight="700" letter-spacing="-2">${titleMarkup}</text>
 
       <text x="76" y="548" fill="#fff4e8" font-family="DejaVu Sans Mono, monospace" font-size="23" font-weight="700">Head of AI Engineering</text>
-      <text x="76" y="586" fill="#d9d2c9" font-family="DejaVu Sans Mono, monospace" font-size="20">charlywebster.com</text>
+      <text x="76" y="586" fill="#d9d2c9" font-family="DejaVu Sans Mono, monospace" font-size="20">www.charlywebster.com</text>
     </svg>
   `;
 

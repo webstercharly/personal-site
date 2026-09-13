@@ -52,7 +52,7 @@ const browser = await puppeteer.launch({
 try {
   const page = await browser.newPage();
 
-  for (const path of ['/', '/blog/', '/blog/astro-5-to-7-upgrade/', '/rss.xml']) {
+  for (const path of ['/', '/about/', '/blog/', '/blog/astro-5-to-7-upgrade/', '/rss.xml']) {
     const response = await openWithRetry(page, path);
     assert.equal(response?.status(), 200, `${path} should return 200`);
     console.log(`✓ ${path} returned 200`);

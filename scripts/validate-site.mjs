@@ -3,7 +3,7 @@ import { lstat, readFile, readdir } from 'node:fs/promises';
 import { dirname, extname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const DEFAULT_SITE = 'https://charlywebster.com';
+const DEFAULT_SITE = 'https://www.charlywebster.com';
 
 async function walk(dir) {
   const files = [];

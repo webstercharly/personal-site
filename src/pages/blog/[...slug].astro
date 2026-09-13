@@ -22,7 +22,10 @@ const draft = isDraft(entry);
 
 const wordCount = (entry.body ?? '').split(/\s+/).length;
 const readingTime = Math.ceil(wordCount / WORDS_PER_MINUTE);
-const canonicalUrl = new URL(`/blog/${entry.id}`, Astro.site).toString();
+const siteUrl = Astro.site ?? new URL('https://www.charlywebster.com');
+const canonicalUrl = new URL(`/blog/${entry.id}/`, siteUrl).toString();
+const profileUrl = new URL('/about/', siteUrl).toString();
+const personId = `${profileUrl}#charly-webster`;
 ---
 
 <BaseLayout
@@ -113,8 +116,8 @@ const canonicalUrl = new URL(`/blog/${entry.id}`, Astro.site).toString();
           <div>
             <h3 class="text-lg font-bold mb-2">About {entry.data.author}</h3>
             <p class="text-gray-700 dark:text-gray-300">
-              Head of AI Engineering, building teams and technology behind better customer
-              experiences. Follow me on
+              Charly Webster is Head of AI Engineering at M&amp;S, leading a centralised AI Product
+              Engineering Centre of Excellence. Read more <a href="/about" class="hover:underline transition-colors" style="color: var(--color-accent);">about Charly</a> or follow him on
               <a href="https://www.linkedin.com/in/charlywebster" target="_blank" rel="noopener noreferrer" class="hover:underline transition-colors" style="color: var(--color-accent);"> LinkedIn</a>.
             </p>
           </div>
@@ -135,21 +138,24 @@ const canonicalUrl = new URL(`/blog/${entry.id}`, Astro.site).toString();
     "@type": "BlogPosting",
     "headline": entry.data.title,
     "description": entry.data.description,
+    "image": new URL(`/og/posts/${entry.id}.png`, siteUrl).toString(),
     "datePublished": entry.data.pubDate.toISOString(),
     "dateModified": entry.data.updatedDate?.toISOString() || entry.data.pubDate.toISOString(),
     "author": {
       "@type": "Person",
+      "@id": personId,
       "name": entry.data.author,
-      "url": "https://charlywebster.com"
+      "url": profileUrl
     },
     "publisher": {
       "@type": "Person",
+      "@id": personId,
       "name": "Charly Webster",
-      "url": "https://charlywebster.com"
+      "url": profileUrl
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://charlywebster.com/blog/${entry.id}`
+      "@id": canonicalUrl
     },
     "keywords": entry.data.tags.join(", "),
     "articleSection": "Engineering Leadership",

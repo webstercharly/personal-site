@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  site: 'https://charlywebster.com',
+  site: 'https://www.charlywebster.com',
   devToolbar: {
     enabled: false
   },

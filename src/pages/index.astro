@@ -122,21 +122,6 @@ try {
   </footer>
 </BaseLayout>
 
-<script>
-  const portraitFrame = document.querySelector<HTMLElement>('.portrait-frame');
-
-  if (portraitFrame) {
-    const isDark = document.documentElement.classList.contains('dark');
-    const accents = isDark
-      ? ['#45d582', '#fa72a8', '#f2ca5b']
-      : ['#27b467', '#e8548f', '#e6b93f'];
-    const randomValue = crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
-    const randomIndex = randomValue % accents.length;
-    const selectedAccent = accents[randomIndex] ?? (isDark ? '#45d582' : '#27b467');
-    portraitFrame.style.setProperty('--portrait-accent', selectedAccent);
-  }
-</script>
-
 <style>
   .home-shell,
   .footer-inner {
@@ -187,7 +172,7 @@ try {
     position: absolute;
     inset: 12px -12px -12px 12px;
     z-index: -1;
-    background: var(--portrait-accent, var(--color-accent-yellow));
+    background: var(--brand-accent, var(--color-accent-yellow));
     border: 2px solid var(--color-text);
     border-radius: 42% 58% 48% 52% / 53% 42% 58% 47%;
     transform: rotate(3deg);

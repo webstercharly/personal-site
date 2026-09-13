@@ -49,6 +49,17 @@ const currentPath = Astro.url.pathname;
   });
 </script>
 
+<script>
+  const isDark = document.documentElement.classList.contains('dark');
+  const brandAccents = isDark
+    ? ['#45d582', '#fa72a8', '#f2ca5b']
+    : ['#27b467', '#e8548f', '#e6b93f'];
+  const randomValue = crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
+  const randomIndex = randomValue % brandAccents.length;
+  const brandAccent = brandAccents[randomIndex] ?? (isDark ? '#45d582' : '#27b467');
+  document.documentElement.style.setProperty('--brand-accent', brandAccent);
+</script>
+
 <style>
   .site-nav {
     position: sticky;
@@ -79,7 +90,7 @@ const currentPath = Astro.url.pathname;
   }
 
   .wordmark span {
-    color: var(--color-accent-pink);
+    color: var(--brand-accent, var(--color-accent-pink));
   }
 
   .nav-links {

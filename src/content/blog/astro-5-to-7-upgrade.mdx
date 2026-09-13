@@ -1,6 +1,6 @@
 ---
-title: 'How I Moved This Site from Astro 5 to Astro 7'
-description: 'A record of an upgrade through two major versions: the content collections API, Tailwind CSS 4, a new Markdown processor, and icons with no library.'
+title: 'The Astro upgrade that removed all my spacing'
+description: 'What I learned upgrading this site from Astro 5 to Astro 7, including content collections, Tailwind CSS 4, and the CSS bug that passed every check.'
 pubDate: 2026-08-08
 author: 'Charly Webster'
 tags: ['astro', 'tailwind', 'accessibility', 'tooling']
@@ -12,48 +12,38 @@ import MetricsGrid from '@components/content/MetricsGrid.astro';
 import CodeComparison from '@components/content/CodeComparison.astro';
 import Timeline from '@components/content/Timeline.astro';
 
-This site was on Astro 5. It's on Astro 7 now, two major versions later, and one of those versions broke something in a way that no error message ever mentioned.
+I upgraded this site from Astro 5 to Astro 7 expecting the content collections migration to be the awkward bit. It wasn't.
 
-<Callout type="info" title="Summary">
-I moved this site through two major versions. The largest changes were the content collections API, Tailwind CSS 4, and a new Markdown processor. One change quietly removed all the spacing on the site, and the build reported nothing wrong.
+The thing that actually cost me time was Tailwind. Every spacing utility on the site stopped working, while the build and type checks stayed green.
+
+<Callout type="info" title="The short version">
+I moved the site through two major Astro versions, changed the content collections API, moved to Tailwind CSS 4, replaced the old Tailwind integration, and switched the Markdown pipeline. The most useful lesson was less glamorous: a green build does not prove that the page looks right.
 </Callout>
 
-## Why I did this work
+## What I checked first
 
-Astro 5 came out in 2024, and two major versions have shipped since. Each one carries changes that break existing code. That's what a major version means. Wait long enough and those changes pile up into one upgrade instead of two smaller ones, and a large upgrade is where you find out how much you were relying on things you never wrote down.
+Astro 5 came out in 2024. By the time I did this upgrade, Astro 6 and Astro 7 were both in the gap between the version I had installed and the version I wanted to use.
 
-## Before you start
+I read the upgrade notes for both releases before changing the code. That sounds obvious. It is also easy to skip when the command to update a dependency is sitting right there.
 
-Do these first:
-
-1. Read the release notes for every major version in between, not just the last one.
-2. Check each integration you depend on against the new version before you touch any code.
-3. Make sure your tests actually run, so you have something to trust once you start changing things.
-
-<Callout type="warning" title="An integration can stop an upgrade">
-The `@astrojs/tailwind` integration doesn't work with Astro 6 or later. I had to install Tailwind CSS a different way instead.
-</Callout>
-
-## Node.js
-
-Astro 7 needs Node.js 22.12 or later. This site was still on Node 18, which meant the version had to change in three places at once:
+The other early check was the integrations. The old `@astrojs/tailwind` integration does not work with Astro 6 or later, so Tailwind needed to move to a different setup. Astro 7 also needs Node.js 22.12 or later. This site was still on Node 18, which meant updating three places together:
 
 - `.nvmrc`
 - `netlify.toml`
 - the `engines` field in `package.json`
 
-Miss the deploy configuration and the build will still work on your machine; it just fails on the server, which is a more annoying place to find out.
+If the deploy configuration is missed, the build can work locally and fail on the server. That is a more annoying place to find out.
 
-## The content collections API
+## The content collections change
 
-Astro 6 removed the old content collections API outright, which made this the single largest change to the code. The migration itself is mechanical:
+Astro 6 removed the legacy content collections API. The replacement is not conceptually difficult, but it touches several parts of the site:
 
 1. Move `src/content/config.ts` to `src/content.config.ts`.
 2. Add a loader to each collection.
 3. Change `entry.slug` to `entry.id`.
 4. Change `entry.render()` to `render(entry)`.
 
-Without a loader, Astro simply doesn't find your files.
+Without a loader, Astro does not find the files.
 
 <CodeComparison title="The collection configuration" beforeLabel="Astro 5" afterLabel="Astro 7">
 
@@ -92,24 +82,26 @@ const blog = defineCollection({
 
 </CodeComparison>
 
-One quieter change: the `body` property can now be empty, so give it a default before you use it. My code counts the words in each post, and without that guard it stopped dead at the first post that hit the new behavior. `astro:content` still hands you `z` for schemas, but it'll nag you about it. Import `z` from `astro/zod` instead and the warning goes away.
+There was a quieter change around the `body` property too. It can now be empty, so code that counts words in a post needs a default before it starts counting. I also moved the schema import from `astro:content` to `astro/zod` to avoid the warning.
 
-## Tailwind CSS 4
+That was the kind of change I expected from the upgrade: explicit, local, and fairly easy to check.
 
-Tailwind CSS 4 moved its configuration into the CSS file, so `tailwind.config.mjs` is gone. Two lines replace it:
+## Tailwind was the real problem
+
+Tailwind CSS 4 moved more of its configuration into CSS. The setup on this site became:
 
 ```css
 @import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
 ```
 
-The first line replaces the three old `@tailwind` directives. The second keeps class-based dark mode working. Skip it and every `dark:` class in the project silently stops doing anything. See [Tailwind's own upgrade guide](https://tailwindcss.com/docs/upgrade-guide) for the rest of what changed between v3 and v4.
+The first line replaces the old Tailwind directives. The second keeps class-based dark mode working.
 
-### A problem with CSS layers
+The migration itself was not the interesting part. The cascade was.
 
-This is the part of the upgrade that actually hurt.
+### The spacing disappeared
 
-Tailwind CSS 4 puts its utility classes inside a CSS layer, and CSS outside a layer always beats CSS inside one, regardless of specificity. That rule doesn't care how many classes you stack. My global reset had never needed to care about layers, because it had never needed to:
+My global reset looked like this:
 
 ```css
 * {
@@ -118,9 +110,13 @@ Tailwind CSS 4 puts its utility classes inside a CSS layer, and CSS outside a la
 }
 ```
 
-Under Tailwind 3, this was harmless. `.p-4` has more specificity than `*`, so `.p-4` won, full stop. Under Tailwind 4, the reset sits outside any layer while every utility class sits inside one, and unlayered CSS wins unconditionally. So the reset beat every spacing utility on the site at once. `p-4`, `p-6`, `my-6`, `px-3`: all of them silently collapsed to `0px`, and nothing about the rule that did it looked wrong in isolation.
+That had been harmless with Tailwind 3. The utility classes won when they needed to, and the site looked normal.
 
-The fix, once I found the actual cause, was one line:
+Tailwind 4 puts its utility classes inside a CSS layer. The reset was outside a layer, so it won the cascade regardless of the utility class's specificity. `p-4`, `p-6`, `my-6`, `px-3`: they all collapsed to `0px`.
+
+Nothing was syntactically wrong. The build passed. The type check passed. The page was just wrong.
+
+I found it by opening the site in a browser and measuring an element by hand. The fix was small:
 
 ```css
 @layer base {
@@ -131,62 +127,31 @@ The fix, once I found the actual cause, was one line:
 }
 ```
 
-<Callout type="danger" title="A build with no errors can hide a problem">
-The build reported nothing. The type check reported nothing. Every page had just lost all its spacing anyway, and I only caught it by opening a page in a browser and measuring an element by hand. Neither tool in the pipeline had any way to know that the *values* were wrong, only that the *syntax* was valid, which it was.
+<Callout type="danger" title="A green build is not a visual test">
+The build could tell me that the CSS was valid. It could not tell me that every spacing utility had stopped having an effect. I had to look at the page.
 </Callout>
 
-## The new Markdown processor
+That changed how I checked the rest of the migration. I stopped treating `astro check` and the production build as the finish line. They were useful checks, but they were only two checks.
 
-Astro 7 ships a new Markdown processor called Sätteri, replacing remark and rehype. I went in braced for Expressive Code to break, since it depends on a rehype plugin, but Astro wires it into the new processor cleanly, and it just worked.
+## The other Astro 7 changes
 
-## The new compiler
+Astro 7 brings a new Markdown processor, Sätteri, and a stricter compiler. I expected Expressive Code to need work because it depends on a rehype plugin. It did not; it worked with the new processor.
 
-The old Astro compiler was written in Go; the new one is written in Rust, and it's stricter about what it lets through. An HTML tag with no closing tag used to be tolerated. Now it stops the build. If your Markdown or components have been quietly malformed for a while, this is where that debt comes due.
+I also added Expressive Code for the code blocks on the site. It gives readers a copy button, diff-style marks, editor- or terminal-style frames, and collapsible sections. I checked the production bundle rather than guessing: it added 18.6 kB of CSS and 2.5 kB of JavaScript.
 
-## Code blocks
+One of my own CSS rules then competed with Expressive Code's `pre` styling. Both selectors had the same specificity, so the later declaration won. I narrowed my selector with `:not()` rather than relying on declaration order.
 
-I added Expressive Code to handle every code block on the site. It gives you a copy button, diff-style marks for added and removed lines, editor- or terminal-style frames, and collapsible sections, all for a cost of 18.6 kB of CSS and 2.5 kB of JavaScript, which is small enough not to think about twice.
+The icons were a smaller decision. Emoji did not render consistently between systems, so I replaced them with ten local SVGs. That added 4 kB and no icon dependency. Ten icons did not justify another library.
 
-<Callout type="danger" title="Two CSS rules can have the same specificity">
-My own CSS set a background color on every `pre` element. Expressive Code sets its own background color on the same elements. Both rules had identical specificity, so the winner came down to which one was declared later in the cascade, not which one made more sense. I narrowed my rule with `:not()` so the two would stop competing at all.
-</Callout>
+## Accessibility and drafts
 
-## Icons
+The icon change exposed an accessibility problem. The callout emoji had `aria-hidden="true"`, which meant a screen reader skipped it. That was fine when the text beside it carried the same meaning. It was not fine when colour and the emoji were the only difference between a warning and a tip.
 
-The site used emoji for icons, and emoji don't render consistently across systems. The same character can look like a different drawing depending on the OS. I switched to SVG icons instead, without adding a library, because Astro can import an SVG file and use it as a component directly:
+Each callout now has a hidden text label such as `Warning:`, `Tip:`, or `Danger:`. A sighted reader does not see it, but a screen reader gets the information the colour was carrying.
 
-```astro
----
-import Info from '../icons/info.svg';
----
+I also changed how drafts are excluded. My first approach used a `draft` field in frontmatter and filtered it wherever posts were listed. I filtered it in three places and forgot a fourth. A draft got a public URL and a sitemap entry before I noticed.
 
-<Info class="w-5 h-5" aria-hidden="true" />
-```
-
-Ten Lucide icons now live in `src/icons`, totaling 4 kB. I looked at two other paths before landing here:
-
-- `astro-icon` works fine, but hasn't shipped a new version since December 2024, and it wraps every icon in a `symbol` and a `use` element you don't strictly need.
-- `lucide-static` installs 61 MB (mostly fonts and prebuilt bundles) to hand you the same 4 kB of icons you'd actually use.
-
-Ten icons don't justify a dependency either way.
-
-## Accessibility
-
-Every emoji carried `aria-hidden="true"`, so a screen reader skipped past it entirely, which sounds correct, and mostly was. The problem was that color and the emoji itself were the *only* signal for which kind of callout you were looking at. Strip the emoji out for a screen reader, and a warning and a tip became indistinguishable.
-
-So each callout now gets a hidden text label (`Warning:`, `Tip:`, `Danger:`) that a screen reader announces and a sighted reader never sees.
-
-<Callout type="tip" title="When to hide an icon">
-Hide an icon from a screen reader only when the text next to it already carries the same information. If the icon is the only place that information lives, it needs a text label instead.
-</Callout>
-
-## Drafts
-
-A draft post has one job: stay off the live site.
-
-My first attempt used a `draft` field in the frontmatter, filtered out wherever posts got listed. That approach has an obvious failure mode: I filtered it in three places and forgot a fourth, and a draft got a public URL and a sitemap entry before I noticed.
-
-A directory turned out to be the better mechanism. The loader simply doesn't read the `_drafts` directory during a production build:
+The better solution was to put drafts in `_drafts` and exclude that directory from the production loader:
 
 ```ts
 loader: glob({
@@ -197,59 +162,51 @@ loader: glob({
 }),
 ```
 
-A draft isn't in the collection at all now, so there's no page left that has to remember to exclude it. There's nothing to exclude. The dev server still reads everything in `_drafts`, so you can preview a post while you're still writing it. Publishing is just moving the file up one directory; the URL doesn't change underneath it.
+In development, I can still preview drafts. In production, they are not in the collection at all.
 
-<Callout type="tip" title="Remove the data at its source">
-Filter the same data in more than one place and you will eventually forget one of them. It's safer to stop the data from existing in the wrong place to begin with.
-</Callout>
-
-## The sequence of the work
+## How the upgrade actually went
 
 <Timeline
-  title="The steps that I did"
+  title="The migration"
   items={[
     {
       date: 'Step 1',
-      title: 'Read the release notes',
-      description: 'I read the notes for Astro 6 and Astro 7 before I changed the code.',
+      title: 'Read the upgrade notes',
+      description: 'I read the notes for Astro 6 and Astro 7 before changing the code.',
       icon: 'info',
       color: 'blue'
     },
     {
       date: 'Step 2',
-      title: 'Change the dependencies',
-      description: 'I moved to Astro 7, MDX 7, and Tailwind CSS 4. I removed the old Tailwind integration.',
+      title: 'Update the dependencies',
+      description: 'I moved to Astro 7, MDX 7, and Tailwind CSS 4, then removed the old Tailwind integration.',
       icon: 'trending-up',
       color: 'purple'
     },
     {
       date: 'Step 3',
-      title: 'Correct the code',
-      description: 'I changed the content collections API, the loader, and the CSS.',
+      title: 'Fix the code and CSS',
+      description: 'I changed the content collections API and fixed the reset that was beating Tailwind utilities.',
       icon: 'lightbulb',
       color: 'orange'
     },
     {
       date: 'Step 4',
-      title: 'Look at the result',
-      description: 'I built the site, read the HTML, and opened the pages in a browser.',
+      title: 'Open the site',
+      description: 'I built the site, read the generated HTML, and checked the pages in a browser.',
       icon: 'circle-check',
       color: 'green'
     }
   ]}
 />
 
-## What I learned
+## What I would do next time
 
-- Read the release notes for every major version in between, not just the last one.
-- Check your integrations before you start. One incompatible integration can stop the whole upgrade.
-- Read the HTML the build actually produces. A build with no errors isn't the same as a build that's correct.
-- Open the site in a browser. Some problems only exist there.
-- Count your dependencies honestly. A framework feature can quietly replace a library you no longer need.
-- Learn how CSS layers change the cascade before a tool you depend on adopts them. It changes which rule wins, not just how the code looks.
-- Remove data at its source instead of filtering it repeatedly. You will forget one of the places eventually.
-
-## The result
+- Upgrade one major version at a time if the site is important enough to justify the extra release.
+- Check integrations before changing application code.
+- Open the site before trusting a green build.
+- Inspect the generated HTML and CSS, not just the source files.
+- Keep data out of the wrong collection rather than remembering to filter it in several places.
 
 <MetricsGrid columns={3} title="The site after the upgrade">
   <Metric value="7.2" label="Astro version" color="purple" icon="trending-up" description="From 5.15, through two major versions" />
@@ -257,4 +214,8 @@ Filter the same data in more than one place and you will eventually forget one o
   <Metric value="4 kB" label="Icons" trend="down" color="emerald" icon="zoom-in" description="Ten SVG files, and no icon library" />
 </MetricsGrid>
 
-The site ended up with two more dependencies than it started with: Expressive Code and the new Markdown package account for both. But the icons need no library at all now, and every dependency still standing gets active updates, which is the trade I'd take again. See [Astro's v7 upgrade guide](https://docs.astro.build/en/guides/upgrade-to/v7/) if you're weighing the same move.
+The site ended up with two more dependencies than it started with. Expressive Code and the new Markdown package account for both. The icons need no library, and the remaining dependencies are still actively maintained. That is a trade I would make again.
+
+The part I would not repeat is waiting for a green build to tell me the page was fine. It could not see the missing spacing. I had to do that bit myself.
+
+See [Astro's v7 upgrade guide](https://docs.astro.build/en/guides/upgrade-to/v7/) and [Tailwind's upgrade guide](https://tailwindcss.com/docs/upgrade-guide) if you are making the same move.

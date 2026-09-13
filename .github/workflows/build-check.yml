@@ -24,5 +24,11 @@ jobs:
       - name: Install dependencies (production context, no devDependencies)
         run: npm ci --omit=dev
 
+      - name: Test site validator
+        run: npm run test:site
+
       - name: Build
         run: npm run build
+
+      - name: Validate generated links and metadata
+        run: npm run validate:site

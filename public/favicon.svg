@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
-  <title>Charly Webster</title>
-  <rect width="64" height="64" rx="12" fill="#24211f"/>
-  <text x="32" y="41" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="700" letter-spacing="-2" fill="#fffaf5">CW</text>
-  <path d="M19 49h26" stroke="#54d88d" stroke-width="3" stroke-linecap="round"/>
+  <title>CW.</title>
+  <rect width="64" height="64" rx="12" fill="#fffaf5"/>
+  <text x="32" y="39" text-anchor="middle" font-family="monospace" font-size="21" font-weight="800" letter-spacing="-2" fill="#24211f">CW<tspan fill="#e8548f">.</tspan></text>
 </svg>

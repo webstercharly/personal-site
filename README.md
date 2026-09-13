@@ -1,230 +1,204 @@
-# Personal Website - Charly Webster
+# Charly Webster’s personal site
 
-A modern personal website and blog built with Astro, featuring markdown-based blog posts with GitHub-integrated comments.
+This is the source for [charlywebster.com](https://charlywebster.com): a small personal site and blog built with Astro.
 
-## Features
+The site is intentionally simple. Posts live in Markdown or MDX, the site is statically generated, and the browser only gets JavaScript where it earns its place.
 
-- **Modern Stack**: Built with [Astro](https://astro.build) for optimal performance
-- **Blog System**: Markdown/MDX support with type-safe content collections
-- **GitHub Comments**: Integrated [giscus](https://giscus.app/) for blog comments via GitHub Discussions
-- **Dark Mode**: Built-in dark mode toggle with system preference detection
-- **SEO Optimized**: Meta tags, Open Graph, Twitter Cards, and sitemap
-- **Custom Social Cards**: Build-time 1200×630 previews for the homepage and every published post
-- **Article Sharing**: Accessible LinkedIn, Bluesky, and copy-link actions
-- **RSS Feed**: Automatic RSS feed generation at `/rss.xml`
-- **Responsive Design**: Mobile-first responsive design
-- **Performance**: Minimal JavaScript, optimized assets, fast page loads
+The visual direction was inspired by [Cassidy Williams’ site](https://cassidoo.co/). No code was used from it; the design and implementation here are original.
 
-## Tech Stack
+## What is here
 
-- **Framework**: Astro 7.x
-- **Language**: TypeScript (strict mode)
-- **Styling**: Tailwind CSS 4, plus custom CSS variables for theming
-- **Content**: Markdown/MDX for blog posts
-- **Comments**: giscus (GitHub Discussions)
-- **Deployment**: Netlify, configured via `netlify.toml`
+- Astro 7 with TypeScript
+- Markdown and MDX blog posts with typed content collections
+- Dark mode with system preference detection
+- GitHub Discussions comments through [giscus](https://giscus.app/)
+- RSS at `/rss.xml`
+- Open Graph and Twitter metadata
+- Build-time social cards for the homepage and posts
+- Local SVG icons rather than an icon library
+- Responsive layouts and accessibility checks
+- Netlify deployment from `master`
 
-## Getting Started
+## Stack
 
-### Prerequisites
+- **Framework:** [Astro](https://astro.build) 7
+- **Language:** TypeScript in strict mode
+- **Styling:** Tailwind CSS 4 and custom CSS variables
+- **Content:** Markdown and MDX
+- **Comments:** giscus and GitHub Discussions
+- **Deployment:** Netlify
 
-- Node.js 22.12 or higher
-- npm
+## Run it locally
 
-### Installation
+You need Node.js 22.12 or newer and npm.
 
-1. Clone the repository:
 ```bash
 git clone https://github.com/webstercharly/personal-site.git
 cd personal-site
-```
-
-2. Install dependencies:
-```bash
 npm install
-```
-
-3. Start the development server:
-```bash
 npm run dev
 ```
 
-The site will be available at `http://localhost:4321`
+Open [http://localhost:4321](http://localhost:4321).
 
-## Setting Up Giscus Comments
+To check the production build locally:
 
-To enable GitHub-integrated comments on blog posts:
-
-1. Visit [giscus.app](https://giscus.app/)
-2. Follow the setup wizard to:
-   - Enable Discussions on your repository
-   - Install the giscus app
-   - Get your repository ID and category ID
-3. Update the giscus configuration in `src/pages/blog/[...slug].astro`:
-   ```javascript
-   'data-repo': 'webstercharly/personal-site', // Your repo
-   'data-repo-id': 'YOUR_REPO_ID', // From giscus.app
-   'data-category': 'Blog Comments',
-   'data-category-id': 'YOUR_CATEGORY_ID', // From giscus.app
-   ```
-
-## Project Structure
-
+```bash
+npm run build
+npm run preview
 ```
+
+## Comments with giscus
+
+The blog uses giscus to turn GitHub Discussions into a comment system.
+
+1. Enable Discussions on the repository.
+2. Install and configure the giscus app at [giscus.app](https://giscus.app/).
+3. Copy the repository and category IDs into `src/pages/blog/[...slug].astro`:
+
+```javascript
+'data-repo': 'webstercharly/personal-site',
+'data-repo-id': 'YOUR_REPO_ID',
+'data-category': 'Blog Comments',
+'data-category-id': 'YOUR_CATEGORY_ID',
+```
+
+## Project layout
+
+```text
 /
 ├── public/
-│   ├── images/           # Static images
-│   └── favicon.svg       # Site favicon
+│   ├── images/              # Static images
+│   └── favicon.svg          # Site favicon
 ├── src/
-│   ├── components/       # Reusable components
-│   │   ├── content/          # Components for use in MDX posts
-│   │   ├── Icon.astro        # Icons addressed by name
-│   │   ├── icons.ts          # The icon name registry
+│   ├── components/
+│   │   ├── content/         # Components used inside MDX posts
+│   │   ├── Icon.astro       # Named icon component
+│   │   ├── icons.ts         # Icon registry
 │   │   └── Navigation.astro
-│   ├── content/
-│   │   └── blog/         # Published posts (Markdown/MDX)
-│   │       └── _drafts/  # Drafts, left out of the build
-│   ├── content.config.ts # Content collection schema and loader
-│   ├── icons/            # Vendored Lucide SVGs (see its README)
-│   ├── layouts/
-│   │   └── BaseLayout.astro  # Base HTML layout
-│   ├── lib/
-│   │   ├── constants.ts
-│   │   └── posts.ts          # getPosts() / isDraft()
-│   ├── pages/
-│   │   ├── index.astro       # Homepage
-│   │   ├── blog/
-│   │   │   ├── index.astro   # Blog listing
-│   │   │   └── [...slug].astro  # Blog post template
-│   │   └── rss.xml.ts        # RSS feed
-│   └── styles/
-│       └── global.css        # Global styles and theme
+│   ├── content/blog/        # Published Markdown/MDX posts
+│   │   └── _drafts/         # Drafts, excluded from production
+│   ├── content.config.ts    # Content schema and loader
+│   ├── icons/               # Local Lucide SVGs
+│   ├── layouts/             # Shared page layouts
+│   ├── lib/                 # Site constants and post helpers
+│   ├── pages/               # Routes and page templates
+│   └── styles/              # Global styles and theme variables
 ├── scripts/
-│   └── editorial-audit.mjs   # Deterministic blog post quality checks
-├── .github/workflows/    # PR checks (editorial audit, production build, Lighthouse)
-├── astro.config.mjs      # Astro configuration
-├── tsconfig.json         # TypeScript configuration
-└── package.json
+│   └── editorial-audit.mjs  # Deterministic post checks
+├── .github/workflows/       # Editorial, build and Lighthouse checks
+├── astro.config.mjs
+├── netlify.toml
+├── package.json
+└── tsconfig.json
 ```
 
-## Writing Blog Posts
+## Writing a post
 
-Create a new `.md` or `.mdx` file in `src/content/blog/`:
+Create a `.md` or `.mdx` file in `src/content/blog/`:
 
 ```markdown
 ---
-title: 'Your Post Title'
-description: 'A brief description of your post'
-pubDate: 2025-11-01
+title: 'A useful title'
+description: 'A short description of the post'
+pubDate: 2026-01-15
 author: 'Charly Webster'
-tags: ['tag1', 'tag2']
+tags: ['engineering', 'architecture']
 ---
 
-Your content goes here...
+The post starts here.
 ```
 
 ### Drafts
 
-A post's directory decides whether it is published — there is no `draft`
-frontmatter flag:
+The directory controls publication status. There is no `draft` frontmatter flag.
 
-| Location | Live site | `npm run dev` |
+| Location | Production build | Development server |
 | --- | --- | --- |
 | `src/content/blog/` | Published | Shown |
-| `src/content/blog/_drafts/` | Excluded entirely | Shown, with a "Draft preview" banner |
+| `src/content/blog/_drafts/` | Excluded | Shown with a preview banner |
 
-Drafts are dropped by the content loader itself, so a draft cannot reach a
-public URL, the sitemap, the RSS feed, or any index page. Draft pages also
-carry `noindex, nofollow` while you preview them.
+The production loader excludes `_drafts`, so a draft does not get a page, sitemap entry, RSS entry or listing entry. Preview drafts keep the URL they will have when published and are marked `noindex, nofollow`.
 
-A draft previews at the URL it will have once it is live — `_drafts/` never
-appears in the path. **To publish, move the file up one directory** into
-`src/content/blog/`. Nothing else changes, and the URL stays the same.
-
-In `.mdx` posts, import components through the `@components/*` alias rather
-than a relative path, so imports keep working when the file moves:
+To publish a draft, move it into `src/content/blog/`. In an MDX post, use the `@components/*` alias for component imports:
 
 ```mdx
 import Callout from '@components/content/Callout.astro';
 ```
 
-## Available Scripts
+## Commands
 
-- `npm run dev` - Start development server
-- `npm run build` - Type-check (`astro check`) and build for production
-- `npm run preview` - Preview production build locally
-- `npm run astro` - Run Astro CLI commands
-- `npm run audit:drafts` - Run deterministic quality checks against posts in `_drafts/`
-- `npm run audit:posts` - Run the same checks against every post, published or draft
-- `npm run screenshots` - Capture light/dark screenshots of key pages with Puppeteer (needs `npm run dev` running first)
+```bash
+npm run dev          # Start the development server
+npm run build        # Type-check and build for production
+npm run preview      # Serve the production build locally
+npm run astro        # Run Astro CLI commands
+npm run audit:drafts # Check posts in _drafts/
+npm run audit:posts  # Check every post
+npm run screenshots   # Capture key-page screenshots
+```
 
-## Quality checks on pull requests
+The screenshot command expects the development server to be running first.
 
-Three GitHub Actions run automatically:
+## Checks on pull requests
 
-- **Editorial audit** (`.github/workflows/editorial-audit.yml`) - on PRs touching `src/content/blog/**`, checks changed posts for frontmatter, word counts, broken links, and readability, then adds a qualitative Claude Code review. Posts both as PR comments. Requires a `CLAUDE_CODE_OAUTH_TOKEN` repo secret.
-- **Build check** (`.github/workflows/build-check.yml`) - on every PR, installs and builds under the same production-only conditions Netlify uses, so a build that would fail on deploy fails here first.
-- **Lighthouse check** (`.github/workflows/lighthouse-check.yml`) - on every PR, runs Lighthouse against the homepage, blog index, and any changed post. Gates on Accessibility/Best Practices/SEO scoring 90+; Performance is reported, not gated.
+GitHub Actions runs three checks:
 
-## Customization
+- **Editorial audit** checks frontmatter, word counts, links and readability for changed posts. It also requests a qualitative Claude Code review. This needs the `CLAUDE_CODE_OAUTH_TOKEN` repository secret.
+- **Build check** runs `npm run build` under the same production conditions used by Netlify.
+- **Lighthouse check** checks the homepage, blog index and changed posts. Accessibility, Best Practices and SEO must score at least 90. Performance is reported but does not block the pull request.
 
-### Update Site Configuration
+## Configuration
 
-Edit `astro.config.mjs` to update your site URL:
+Set the canonical site URL in `astro.config.mjs`:
 
 ```javascript
 export default defineConfig({
-  site: 'https://yourdomain.com',
-  // ... other config
+  site: 'https://charlywebster.com',
 });
 ```
 
-### Modify Theme Colors
-
-Update CSS variables in `src/styles/global.css`:
+Theme colours and typography are in `src/styles/global.css`. The main accent variables are:
 
 ```css
 :root {
-  --color-accent: #3b82f6;  /* Primary color */
-  /* ... other variables */
+  --color-accent-green: #27b467;
+  --color-accent-pink: #e8548f;
+  --color-accent-yellow: #e6b93f;
 }
 ```
 
-### Update Social Links
-
-Edit social links in `src/pages/index.astro`
+Social links are defined on the homepage in `src/pages/index.astro`.
 
 ## Deployment
 
-This site deploys to Netlify, configured via `netlify.toml`: build command
-`npm run build`, publish directory `dist`, Node 22. Push to `master` and
-Netlify builds and deploys automatically; every PR also gets a preview
-deploy. See the "Quality checks on pull requests" section above for the
-build check that runs before a PR merges.
+Netlify is configured in `netlify.toml`:
+
+- Build command: `npm run build`
+- Publish directory: `dist`
+- Node version: 22
+
+Pushes to `master` trigger the production deploy. Pull requests get deploy previews.
 
 ## Performance
 
-This site is optimized for performance:
+The site is statically generated and keeps client-side JavaScript small. The remaining scripts handle things such as theme switching, the shared per-load accent colour and comments.
 
-- Minimal JavaScript (only what's needed for dark mode and comments)
-- Static site generation for fast page loads
-- Optimized asset loading
-- SEO-friendly markup
-
-Measured locally against a production build (`npm run build && npm run preview`), Performance/Accessibility/Best Practices/SEO:
+The current local Lighthouse snapshot is recorded here as a useful baseline, not a permanent promise:
 
 | Page | Performance | Accessibility | Best Practices | SEO |
-| --- | --- | --- | --- | --- |
+| --- | ---: | ---: | ---: | ---: |
 | Homepage | 100 | 100 | 96 | 100 |
 | Blog post | 100 | 96 | 100 | 100 |
 
-`netlify.toml` also runs `@netlify/plugin-lighthouse` on every Netlify deploy for the canonical, hosted-environment numbers.
+Netlify also runs `@netlify/plugin-lighthouse` after deployment.
 
 ## License
 
-MIT License - feel free to use this as a template for your own site!
+MIT. Use it as a starting point if it is useful.
 
 ## Contact
 
-- Website: [charlywebster.com](https://charlywebster.com)
-- LinkedIn: [charlywebster](https://www.linkedin.com/in/charlywebster)
+- [Website](https://charlywebster.com)
+- [LinkedIn](https://www.linkedin.com/in/charlywebster)
+- [GitHub](https://github.com/webstercharly)

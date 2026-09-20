@@ -30,7 +30,7 @@ It should go without saying, this is a new tool to the market, it hasn’t prove
 
 So the ideal of shadow mode was to do assessments on the background, record the results and see whether these change overtime with optimisation. Additionally I wouldn’t want Jev being unavailable to have an impact to my Workflow as the assessment itself is something that could be run at any point retrospectively Or asynchronous.
 
-An assessment from a deterministic tool wasn’t going to be enough, the ratings need to be assessed themselves for accuracy, this could be either manually by a human or programatically via an LLM, or perhaps even both. To do that I needed to implement an overall score, for that I am thinking keeping it simple, a 3 rating score, whether a role is a strong fit, possible fit or not a fit.
+An assessment from a deterministic tool wasn’t going to be enough, the ratings need to be assessed themselves for accuracy, this could be either manually by a human or programmatically via an LLM, or perhaps even both. To do that I needed to implement an overall score, for that I am thinking keeping it simple, a 3 rating score, whether a role is a strong fit, possible fit or not a fit.
 
 By having this score it goes beyond whether a title aligns to my interest, it also goes into whether the job role itself matches what I am looking for. A hands on AI role as a founding engineer or CTO is not something I would be interested in for example.
 

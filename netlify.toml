@@ -35,13 +35,6 @@
 
 # Redirects and rewrites
 [[redirects]]
-  # Redirect /blog/post to /blog/post/ (trailing slash)
-  from = "/blog/*"
-  to = "/blog/:splat/"
-  status = 301
-  force = false
-
-[[redirects]]
   # SPA fallback for 404 - serve custom 404 page
   from = "/*"
   to = "/404.html"

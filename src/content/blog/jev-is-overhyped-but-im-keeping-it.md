@@ -8,7 +8,7 @@ tags: ['ai-agents', 'jev', 'llm-evaluation', 'engineering']
 
 I’ve had Jev running in one of my workflows for two days, so far my view is that Jev is overhyped but I am seeing value.
 
-If you’ve read any of my past couple of blog posts the you’d know that I’ve been using Jev to look at job alignment to preferences. Jev gives me a typed integration. I define the possible outputs and it provides me a decision with confidence values, this is simple and nice. It’s cleaner than having an LLM integration although I have not seen evidence that it is more accurate than deterministic rules.
+If you’ve read any of my past couple of blog posts then you’d know that I’ve been using Jev to look at job alignment to preferences. Jev gives me a typed integration. I define the possible outputs and it provides me a decision with confidence values, this is simple and nice. It’s cleaner than having an LLM integration although I have not seen evidence that it is more accurate than deterministic rules.
 
 ## It does not outperform my existing judge
 

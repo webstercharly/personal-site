@@ -30,7 +30,7 @@ Python I set up isolated environments for Hermes and projects, beneficial for wh
 
 Chromium needed a small ARM64 change as not all launchers could find it, I set this all up before Chrome released an ARM64 version.
 
-Nothing too complex, setup was straight forward and smooth, biggest challenge for me was setting families with command-lines instead of a GUI, spent more time with command syntax than anything else.
+Nothing too complex, setup was straight forward and smooth, biggest challenge for me was setting things up with command lines instead of a GUI, spent more time with command syntax than anything else.
 
 ## What the Pi is good at?
 
